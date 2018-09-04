@@ -11,11 +11,7 @@ export class TaquinArray {
     for (let i = 0; i < 3; i++) {
       this.taquinArray[i] = [];
       for (let j = 0; j < 3; j++) {
-        if (randomValue[x] === 9) {
-          this.taquinArray[i][j] = new TaquinCell(randomValue[x], false);
-        } else {
-          this.taquinArray[i][j] = new TaquinCell(randomValue[x], true);
-        }
+        this.taquinArray[i][j] = new TaquinCell(randomValue[x], true);
         x++;
       }
     }
