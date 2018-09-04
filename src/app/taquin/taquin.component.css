@@ -1,0 +1,11 @@
+.cell {
+  height: 200px;
+  width: 200px;
+  font-size: 120px;
+  text-align: center;
+  padding: 0 !important;
+}
+.cell img {
+  height: 200px;
+  width: 200px;
+}

@@ -1,28 +1,21 @@
-<!--<body   ng-controller="NumberCtrl" ng-keydown="shortCut($event)" hm-swipe-up="swipeUP()" hm-swipe-down="swipeDown()"  hm-swipe-left="swipeLeft()" hm-swipe-right="swipeRight()">-->
-<!--<div class="container"   >-->
+<div class="row justify-content-center">
+  <table class="table table-bordered table-dark col-md-4" style="height: 500px">
+    <tbody>
+    <tr>
+      <td *ngFor="let cell of CELLS[0]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
+    </tr>
+    <tr>
+      <td *ngFor="let cell of CELLS[1]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
+    </tr>
+    <tr>
+      <td *ngFor="let cell of CELLS[2]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
 
-  <!--<div class="row board board-{{size}}" ng-init="randomize()">-->
-    <!--<div ng-repeat="piece in board">-->
-      <!--<div ng-hide="{{piece.value}}==0" class="piece piece-number piece-position-{{piece.position}}" ng-click="pieceClick(piece.position)" ng-class="{rightPosition : piece.position  ==(piece.value -1 )}" >-->
-        <!--<span  >{{piece.value}}</span></div>-->
-    <!--</div>-->
-  <!--</div>-->
-
-  <!--<div class="row btn-group controls">-->
-    <!--<button ng-click="randomize()" class="btn btn-danger">Reset</button>-->
-  <!--</div>-->
-
-  <!--<div class="row status-bar">-->
-    <!--<div class="alert alert-info" ng-hide="finished()">Time: {{counter | number}} seconds</div>-->
-    <!--<div class="alert alert-success" ng-show="finished()">Game Finished! in {{counter | number}} seconds!!!</div>-->
-  <!--</div>-->
-  <!--&lt;!&ndash;<pre>{{board | json}}</pre> &ndash;&gt;-->
-<!--</div>-->
-
-
-
-
-
-<!--</body>-->
-
-
+<br>
+<br>
+<div class="row justify-content-center">
+  <a class="btn btn-primary" href="">Add new values</a>
+</div>
