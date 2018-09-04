@@ -21,27 +21,26 @@ export class TaquinArray {
     }
   }
   // Movements // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
-  static swap(cellsArray: TaquinCell[][], coordinates: Array<number>, movement: number): TaquinCell[][] {
-    const tempCell = cellsArray[coordinates[0]][coordinates[1]];
-    console.log(tempCell);
+  swap(coordinates: Array<number>, movement: number): void {
+    const tempCell = this.taquinArray[coordinates[0]][coordinates[1]];
+    console.log(movement);
     switch (movement) {
       case 1:
-        cellsArray[coordinates[0]][coordinates[1]] = cellsArray[coordinates[0] - 1][coordinates[1]];
-        cellsArray[coordinates[0] - 1][coordinates[1]] = tempCell;
+        this.taquinArray[coordinates[0]][coordinates[1]] = this.taquinArray[coordinates[0] - 1][coordinates[1]];
+        this.taquinArray[coordinates[0] - 1][coordinates[1]] = tempCell;
         break;
       case 2:
-        cellsArray[coordinates[0]][coordinates[1]] = cellsArray[coordinates[0] + 1][coordinates[1]];
-        cellsArray[coordinates[0] + 1][coordinates[1]] = tempCell;
+        this.taquinArray[coordinates[0]][coordinates[1]] = this.taquinArray[coordinates[0] + 1][coordinates[1]];
+        this.taquinArray[coordinates[0] + 1][coordinates[1]] = tempCell;
         break;
       case 3:
-        cellsArray[coordinates[0]][coordinates[1]] = cellsArray[coordinates[0]][coordinates[1] - 1];
-        cellsArray[coordinates[0]][coordinates[1] - 1] = tempCell;
+        this.taquinArray[coordinates[0]][coordinates[1]] = this.taquinArray[coordinates[0]][coordinates[1] + 1];
+        this.taquinArray[coordinates[0]][coordinates[1] + 1] = tempCell;
         break;
       case 4:
-        cellsArray[coordinates[0]][coordinates[1]] = cellsArray[coordinates[0]][coordinates[1] + 1];
-        cellsArray[coordinates[0]][coordinates[1] + 1] = tempCell;
+        this.taquinArray[coordinates[0]][coordinates[1]] = this.taquinArray[coordinates[0]][coordinates[1] - 1];
+        this.taquinArray[coordinates[0]][coordinates[1] - 1] = tempCell;
         break;
     }
-    return cellsArray;
   }
 }

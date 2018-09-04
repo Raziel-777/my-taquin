@@ -2,13 +2,13 @@
   <table class="table table-bordered table-dark col-md-4" style="height: 500px">
     <tbody>
     <tr>
-      <td *ngFor="let cell of CELLS[0]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
+      <td *ngFor="let cell of cells.taquinArray[0]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
     </tr>
     <tr>
-      <td *ngFor="let cell of CELLS[1]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
+      <td *ngFor="let cell of cells.taquinArray[1]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
     </tr>
     <tr>
-      <td *ngFor="let cell of CELLS[2]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
+      <td *ngFor="let cell of cells.taquinArray[2]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
     </tr>
     </tbody>
   </table>
