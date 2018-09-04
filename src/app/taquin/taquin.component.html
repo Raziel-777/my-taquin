@@ -2,13 +2,13 @@
   <table class="table table-bordered table-dark col-md-4" style="height: 500px">
     <tbody>
     <tr>
-      <td *ngFor="let cell of cells.taquinArray[0]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
+      <td *ngFor="let cell of cellsArray[0]" class="cell" (click)="switch (cell)"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
     </tr>
     <tr>
-      <td *ngFor="let cell of cells.taquinArray[1]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
+      <td *ngFor="let cell of cellsArray[1]" class="cell" (click)="switch (cell)"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
     </tr>
     <tr>
-      <td *ngFor="let cell of cells.taquinArray[2]" [hidden]="!cell.show" class="cell" (click)="change()"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
+      <td *ngFor="let cell of cellsArray[2]" class="cell" (click)="switch (cell)"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
     </tr>
     </tbody>
   </table>
@@ -17,5 +17,6 @@
 <br>
 <br>
 <div class="row justify-content-center">
-  <button class="btn btn-primary" (click)="change()" href="">SWAP</button>
+  <button style="margin-right: 20px" class="btn btn-primary" (click)="change()" href="">SWAP</button>
+  <input type="number" min="1" max="1000" [(ngModel)]="swapNumber" placeholder="{{ swapNumber }}">
 </div>
