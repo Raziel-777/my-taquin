@@ -19,8 +19,8 @@ export class TaquinComponent implements OnInit {
     const _this = this;
     (function theLoop(i) {
       setTimeout(function () {
-        const x = Math.floor(Math.random() * _this.taquinArray.taquinArray.length);
-        const y = Math.floor(Math.random() * _this.taquinArray.taquinArray.length);
+        const x = Math.floor(Math.random() * _this.cellsArray.length);
+        const y = Math.floor(Math.random() * _this.cellsArray.length);
         const move = moves[Math.floor(Math.random() * moves.length)];
         const cell = [x, y];
         if ((move === 1 && x === 0) || (move === 2 && x === 2) || (move === 3 && y === 2) || (move === 4 && y === 0)) {
@@ -42,24 +42,24 @@ export class TaquinComponent implements OnInit {
     const yVoid = voidCoordinates[1];
     // Four movements condition for voidCell = cellToSwitch
     if (xVoid + 1 in this.cellsArray
-      && this.taquinArray.taquinArray[xVoid + 1][yVoid] === cellToSwitch) {
+      && this.cellsArray[xVoid + 1][yVoid] === cellToSwitch) {
       this.taquinArray.swap([xVoid, yVoid], 2);
     } else if (xVoid - 1 in this.cellsArray
-      && this.taquinArray.taquinArray[xVoid - 1][yVoid] === cellToSwitch) {
+      && this.cellsArray[xVoid - 1][yVoid] === cellToSwitch) {
       this.taquinArray.swap([xVoid, yVoid], 1);
     } else if (yVoid + 1 in this.cellsArray[xVoid]
-      && this.taquinArray.taquinArray[xVoid][yVoid + 1] === cellToSwitch) {
+      && this.cellsArray[xVoid][yVoid + 1] === cellToSwitch) {
       this.taquinArray.swap([xVoid, yVoid], 3);
     } else if (yVoid - 1 in this.cellsArray[xVoid]
-      && this.taquinArray.taquinArray[xVoid][yVoid - 1] === cellToSwitch) {
+      && this.cellsArray[xVoid][yVoid - 1] === cellToSwitch) {
       this.taquinArray.swap([xVoid, yVoid], 4);
     }
   }
 
   findVoidCell(): Array<number> {
-    for (let i = 0; i < this.taquinArray.taquinArray.length; i++) {
-      for (let j = 0; j < this.taquinArray.taquinArray[i].length; j++) {
-        if (this.taquinArray.taquinArray[i][j].value === 9) {
+    for (let i = 0; i < this.cellsArray.length; i++) {
+      for (let j = 0; j < this.cellsArray[i].length; j++) {
+        if (this.cellsArray[i][j].value === 9) {
           return [i, j];
         }
       }
