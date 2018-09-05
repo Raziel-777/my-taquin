@@ -4,11 +4,15 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { TaquinComponent } from './taquin/taquin.component';
+import { HeaderComponent } from './header/header.component';
+import { InlineComponent } from './inline/inline.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TaquinComponent
+    TaquinComponent,
+    HeaderComponent,
+    InlineComponent
   ],
   imports: [
     BrowserModule,

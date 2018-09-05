@@ -1,0 +1,8 @@
+.cellInline {
+  text-align: center;
+  padding: 0 !important;
+}
+.cellInline img {
+  height: 100px;
+  width: 100px;
+}

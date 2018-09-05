@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {TaquinArray} from '../taquinArray';
 import {TaquinCell} from '../taquinCell';
-import {timeInterval} from 'rxjs/operators';
 
 @Component({
   selector: 'app-taquin',
@@ -17,6 +16,7 @@ export class TaquinComponent implements OnInit {
     // array of moves
     const moves = [1, 2, 3, 4]; // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
     const _this = this;
+    // SWAP with delay
     (function theLoop(i) {
       setTimeout(function () {
         const x = Math.floor(Math.random() * _this.cellsArray.length);
@@ -33,6 +33,19 @@ export class TaquinComponent implements OnInit {
         }
       }, 10);
     })(_this.swapNumber);
+    // SWAP without delay
+    // for (let i = 0; i < this.swapNumber;) {
+    //   const x = Math.floor(Math.random() * _this.cellsArray.length);
+    //   const y = Math.floor(Math.random() * _this.cellsArray.length);
+    //   const move = moves[Math.floor(Math.random() * moves.length)];
+    //   const cell = [x, y];
+    //   if ((move === 1 && x === 0) || (move === 2 && x === 2) || (move === 3 && y === 2) || (move === 4 && y === 0)) {
+    //     console.log('MOUVEMENT IMPOSSIBLE');
+    //   } else {
+    //     i ++;
+    //     _this.taquinArray.swap(cell, move);
+    //   }
+    // }
   }
 
   switch(cellToSwitch: TaquinCell): void {
@@ -62,6 +75,14 @@ export class TaquinComponent implements OnInit {
         if (this.cellsArray[i][j].value === 9) {
           return [i, j];
         }
+      }
+    }
+  }
+
+  pattern(img: string): void {
+    for (const entries of this.cellsArray) {
+      for (const entry of entries) {
+        entry.changePattern(img);
       }
     }
   }
