@@ -1,7 +1,7 @@
 import {TaquinCell} from './taquinCell';
 
 export class TaquinInline {
-  public baseArray = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  public baseArray = [5, 7, 9, 6, 2, 4, 1, 3, 8];
   public taquinArray: TaquinCell[];
 
   constructor() {
@@ -35,11 +35,11 @@ export class TaquinInline {
       while (i < this.taquinArray.length) {
         j = i + 1;
         while (j < this.taquinArray.length) {
-          loop += 1;
           if (this.taquinArray[i].value > this.taquinArray[j].value) {
             const tempCell = this.taquinArray[i];
             this.taquinArray[i] = this.taquinArray[j];
             this.taquinArray[j] = tempCell;
+            loop += 1;
             sort = true;
           }
           j++;
