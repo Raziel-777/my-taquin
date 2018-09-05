@@ -3,9 +3,9 @@ export class TaquinCell {
   img: string;
   constructor(val: number) {
     this.value = val;
-    this.img = 'mick' + val.toString() + '.jpg';
+    this.img = 'mickey' + val.toString() + '.jpg';
   }
-  changePattern(img: string): void {
-    this.img = img + this.value + '.jpg';
+  changePattern(pattern: string): void {
+    this.img = pattern + this.value + '.jpg';
   }
 }

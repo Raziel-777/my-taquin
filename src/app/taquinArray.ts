@@ -75,7 +75,6 @@ export class TaquinArray {
         sortFinal = false;
       }
     }
-    console.log(compare);
     return loop;
   }
 

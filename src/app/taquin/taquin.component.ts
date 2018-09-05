@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {TaquinArray} from '../taquinArray';
 import {TaquinCell} from '../taquinCell';
+import {PatternService} from '../index/pattern.service';
 
 @Component({
   selector: 'app-taquin',
@@ -21,24 +22,24 @@ export class TaquinComponent implements OnInit {
     this.solvency = null;
     // array of moves
     const moves = [1, 2, 3, 4]; // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
-    const _this = this;
+    const _this$ = this;
     // SWAP with delay
     (function theLoop(i) {
       setTimeout(function () {
-        const x = Math.floor(Math.random() * _this.cellsArray.length);
-        const y = Math.floor(Math.random() * _this.cellsArray.length);
+        const x = Math.floor(Math.random() * _this$.cellsArray.length);
+        const y = Math.floor(Math.random() * _this$.cellsArray.length);
         const move = moves[Math.floor(Math.random() * moves.length)];
         const cell = [x, y];
         if ((move === 1 && x === 0) || (move === 2 && x === 2) || (move === 3 && y === 2) || (move === 4 && y === 0)) {
           console.log('CAN\'T MOVE');
         } else {
-          _this.taquinArray.swap(cell, move);
+          _this$.taquinArray.swap(cell, move);
         }
         if (--i) {          // If i > 0, keep going
           theLoop(i);       // Call the loop again, and pass it the current value of i
         }
       }, 10);
-    })(_this.swapNumber);
+    })(_this$.swapNumber);
     // SWAP without delay
     // for (let i = 0; i < this.swapNumber;) {
     //   const x = Math.floor(Math.random() * _this.cellsArray.length);
@@ -93,10 +94,11 @@ export class TaquinComponent implements OnInit {
     }
   }
 
-  pattern(img: string): void {
+  changePattern(pattern: string): void {
+    console.log('totootoot');
     for (const entries of this.cellsArray) {
       for (const entry of entries) {
-        entry.changePattern(img);
+        entry.changePattern(pattern);
       }
     }
   }
@@ -132,10 +134,12 @@ export class TaquinComponent implements OnInit {
     }
     // If parity of voidCell moves = parity of total moves for others cells, solvency is true (cf: https://fr.wikipedia.org/wiki/Taquin)
     this.solvency = (moves + voidMove) % 2 === 0;
-    console.log(this.solvency);
   }
 
-  constructor() {
+  constructor(private patternService: PatternService) {
+    patternService.changePattern$.subscribe( pattern => {
+      this.changePattern(pattern);
+    });
   }
 
   ngOnInit() {
