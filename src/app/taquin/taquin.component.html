@@ -22,6 +22,8 @@
   <button style="margin-right: 20px" class="btn btn-success" (click)="sort()" href="">Sort</button>
   <p style="margin-right: 20px">Nombre de swap : {{ iterSwap }}</p>
   <br>
-  <button style="margin-right: 20px" class="btn btn-dark" (click)="solvencyTaquin()" href="">Solvable ?</button>
+  <button *ngIf="solvency === null" style="margin-right: 20px" class="btn btn-dark" (click)="solvencyTaquin()" href="">Solvable ?</button>
+  <button *ngIf="solvency === true" style="margin-right: 20px" class="btn btn-success" href="">OUI !  🤩</button>
+  <button *ngIf="solvency === false" style="margin-right: 20px" class="btn btn-danger" href="">NON   🤮</button>
 
 </div>

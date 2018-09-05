@@ -7,13 +7,17 @@ import {TaquinCell} from '../taquinCell';
   templateUrl: './taquin.component.html',
   styleUrls: ['./taquin.component.css']
 })
+
+// --- MAIN COMPONENT TAQUIN --- //
 export class TaquinComponent implements OnInit {
   private taquinArray = new TaquinArray();
   public cellsArray = this.taquinArray.taquinArray;
   public swapNumber = 1;
   public iterSwap;
-
+  public solvency = null;
+  // Method to swap swapNumber cells
   change(): void {
+    this.solvency = null;
     // array of moves
     const moves = [1, 2, 3, 4]; // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
     const _this = this;
@@ -25,7 +29,7 @@ export class TaquinComponent implements OnInit {
         const move = moves[Math.floor(Math.random() * moves.length)];
         const cell = [x, y];
         if ((move === 1 && x === 0) || (move === 2 && x === 2) || (move === 3 && y === 2) || (move === 4 && y === 0)) {
-          console.log('MOUVEMENT IMPOSSIBLE');
+          console.log('CAN\'T MOVE');
         } else {
           _this.taquinArray.swap(cell, move);
         }
@@ -48,11 +52,12 @@ export class TaquinComponent implements OnInit {
     //   }
     // }
   }
-
+  // Auto sort 2D taquin
   sort(): void {
+    this.solvency = null;
     this.iterSwap = this.taquinArray.sort();
   }
-
+  // Method to switch voidCell with one good cell to switch (taquin classic)
   switch(cellToSwitch: TaquinCell): void {
     // Coordinates x = vertical array, y = horizontal array
     const voidCoordinates = this.findVoidCell(9);
@@ -73,7 +78,7 @@ export class TaquinComponent implements OnInit {
       this.taquinArray.swap([xVoid, yVoid], 4);
     }
   }
-
+  // Find coordinates of cell with his value
   findVoidCell(x: number): Array<number> {
     for (let i = 0; i < this.cellsArray.length; i++) {
       for (let j = 0; j < this.cellsArray[i].length; j++) {
@@ -92,36 +97,30 @@ export class TaquinComponent implements OnInit {
     }
   }
 
-  solvencyTaquin(): boolean {
+  solvencyTaquin(): void {
+    // Find void Cell coordinates and calculate number of moves to set at initial position
     const voidCell = this.findVoidCell(9);
     const initVoidCell = [2, 2];
-    const xMove = initVoidCell[0] - voidCell[0];
-    const ymove = initVoidCell[1] - voidCell[1];
-    const finalMove = xMove + ymove;
+    const xVoidMove = initVoidCell[0] - voidCell[0];
+    const yVoidMove = initVoidCell[1] - voidCell[1];
+    const voidMove = xVoidMove + yVoidMove;
     let moves = 0;
+    // Array of initial position in natural order
     const initArrayX = {'1': 0, '2': 0, '3': 0, '4': 1, '5': 1, '6': 1, '7': 2, '8': 2, '9': 2};
     const initArrayY = {'1': 0, '2': 1, '3': 2, '4': 0, '5': 1, '6': 2, '7': 0, '8': 1, '9': 2};
     let x;
     let y;
-
+    // for each cell in taquinArray calculate number of moves to set at initial posotion
     for (const entries of this.cellsArray) {
       for (const entry of entries) {
-        const u = entries.indexOf(entry);
-        console.log(u);
-        if (u > -1) {
-          x = Math.abs(initArrayX[entry.value] - entries.indexOf(entry));
-          y = Math.abs(initArrayY[entry.value] - this.cellsArray.indexOf(entries));
-          console.log(entries.indexOf(entry));
-          console.log(initArrayX[entry.value]);
-          console.log(initArrayY[entry.value]);
-          console.log(this.cellsArray.indexOf(entries));
-        }
-        moves += (x + y);
+          x = Math.abs(initArrayX[entry.value] - this.cellsArray.indexOf(entries));
+          y = Math.abs(initArrayY[entry.value] - entries.indexOf(entry));
+        moves += (x + y) / 2;
       }
     }
-    console.log(moves);
-    console.log(finalMove);
-    return true;
+    // If parity of voidCell moves = parity of total moves for others cells, solvency is true (cf: https://fr.wikipedia.org/wiki/Taquin)
+    this.solvency = (moves + voidMove) % 2 === 0;
+    console.log(this.solvency);
   }
 
   constructor() {
