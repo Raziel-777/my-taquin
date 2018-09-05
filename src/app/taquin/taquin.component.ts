@@ -15,6 +15,7 @@ export class TaquinComponent implements OnInit {
   public swapNumber = 1;
   public iterSwap;
   public solvency = null;
+
   // Method to swap swapNumber cells
   change(): void {
     this.solvency = null;
@@ -52,11 +53,13 @@ export class TaquinComponent implements OnInit {
     //   }
     // }
   }
+
   // Auto sort 2D taquin
   sort(): void {
     this.solvency = null;
     this.iterSwap = this.taquinArray.sort();
   }
+
   // Method to switch voidCell with one good cell to switch (taquin classic)
   switch(cellToSwitch: TaquinCell): void {
     // Coordinates x = vertical array, y = horizontal array
@@ -78,6 +81,7 @@ export class TaquinComponent implements OnInit {
       this.taquinArray.swap([xVoid, yVoid], 4);
     }
   }
+
   // Find coordinates of cell with his value
   findVoidCell(x: number): Array<number> {
     for (let i = 0; i < this.cellsArray.length; i++) {
@@ -105,17 +109,25 @@ export class TaquinComponent implements OnInit {
     const yVoidMove = initVoidCell[1] - voidCell[1];
     const voidMove = xVoidMove + yVoidMove;
     let moves = 0;
-    // Array of initial position in natural order
-    const initArrayX = {'1': 0, '2': 0, '3': 0, '4': 1, '5': 1, '6': 1, '7': 2, '8': 2, '9': 2};
-    const initArrayY = {'1': 0, '2': 1, '3': 2, '4': 0, '5': 1, '6': 2, '7': 0, '8': 1, '9': 2};
-    let x;
-    let y;
-    // for each cell in taquinArray calculate number of moves to set at initial posotion
+    // Calculate number of transposition of cells adjacent or not, including voidCell, to solve the taquin
+    // Array of initial position in natural order [value, index]
+    const initArray = {'0': 1, '1': 2, '2': 3, '3': 4, '4': 5, '5': 6, '6': 7, '7': 8, '8': 9};
+    // Build one dimensional array with initial cellsArray
+    const cellsFinal = [];
     for (const entries of this.cellsArray) {
       for (const entry of entries) {
-          x = Math.abs(initArrayX[entry.value] - this.cellsArray.indexOf(entries));
-          y = Math.abs(initArrayY[entry.value] - entries.indexOf(entry));
-        moves += (x + y) / 2;
+        cellsFinal.push(entry);
+      }
+    }
+    for (let i = cellsFinal.length - 1; i >= 0; i--) {
+      if (initArray[i] !== cellsFinal[i].value) {
+        moves ++;
+        const tempCell = cellsFinal[i];
+        const u = cellsFinal.findIndex(function (element) {
+          return element.value === initArray[i];
+        });
+        cellsFinal[i] = cellsFinal[u];
+        cellsFinal[u] = tempCell;
       }
     }
     // If parity of voidCell moves = parity of total moves for others cells, solvency is true (cf: https://fr.wikipedia.org/wiki/Taquin)
