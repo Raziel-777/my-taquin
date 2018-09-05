@@ -1,7 +1,8 @@
 import {TaquinCell} from './taquinCell';
+import {T} from '@angular/core/src/render3';
 
 export class TaquinArray {
-  public baseArray = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  public baseArray = [5, 7, 9, 6, 2, 4, 1, 3, 8];
   public taquinArray: TaquinCell[][];
   constructor() {
     this.taquinArray = [];
@@ -47,4 +48,100 @@ export class TaquinArray {
         break;
     }
   }
+  sort(): number {
+    let compare = 0;
+    let loop = 0;
+    let sortLoop1;
+    let sortLoop2;
+    let sortFinal = true;
+    while (sortFinal) {
+      sortLoop1 = false;
+      sortLoop2 = false;
+      for (let entry of this.taquinArray) {
+        let iter;
+        let iter2;
+        [entry, iter, iter2] = this.sortLine(entry);
+        loop += iter;
+        compare += iter2;
+        if (iter > 0) {
+          sortLoop1 = true;
+        }
+      }
+      let iter3;
+      [iter3, sortLoop2] = this.swapLine();
+      compare += 2;
+      loop += iter3;
+      if (sortLoop1 === false && sortLoop2 === false) {
+        sortFinal = false;
+      }
+    }
+    console.log(compare);
+    return loop;
+  }
+
+  sortLine(array: Array<TaquinCell>): [Array<TaquinCell>, number, number] {
+    let i = 0;
+    let j;
+    let iter = 0;
+    let loop = 0;
+    let sort = true;
+    while (sort) {
+      sort = false;
+      while (i < array.length) {
+        j = i + 1;
+        while (j < array.length) {
+          iter ++;
+          if (array[i].value > array[j].value) {
+            const tempCell = array[i];
+            array[i] = array[j];
+            array[j] = tempCell;
+            loop += 1;
+            sort = true;
+          }
+          j++;
+        }
+        i++;
+      }
+    }
+    return [array, loop, iter];
+  }
+
+  swapLine(): [number, boolean] {
+    let loop = 0;
+    let bool = false;
+    for (let i = 0; i < this.taquinArray.length - 1; i++) {
+      loop ++;
+      if (this.taquinArray[i][this.taquinArray.length - 1].value > this.taquinArray[i + 1][0].value) {
+        const tempCell = this.taquinArray[i][this.taquinArray.length - 1];
+        this.taquinArray[i][this.taquinArray.length - 1] = this.taquinArray[i + 1][0];
+        this.taquinArray[i + 1][0] = tempCell;
+        bool = true;
+      }
+    }
+    return [loop, bool];
+  }
+  // sort(): number {
+  //   let i = 0;
+  //   let j = i + 1;
+  //   let loop = 0;
+  //   let sort = true;
+  //   while (sort) {
+  //     sort = false;
+  //     while (i < this.taquinArray.length) {
+  //       j = i + 1;
+  //       while (j < this.taquinArray.length) {
+  //         if (this.taquinArray[i].value > this.taquinArray[j].value) {
+  //           const tempCell = this.taquinArray[i];
+  //           this.taquinArray[i] = this.taquinArray[j];
+  //           this.taquinArray[j] = tempCell;
+  //           loop += 1;
+  //           sort = true;
+  //         }
+  //         j++;
+  //       }
+  //       i++;
+  //     }
+  //   }
+  //   return loop;
+  // }
 }

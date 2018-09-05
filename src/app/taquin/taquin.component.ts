@@ -11,6 +11,7 @@ export class TaquinComponent implements OnInit {
   private taquinArray = new TaquinArray();
   public cellsArray = this.taquinArray.taquinArray;
   public swapNumber = 1;
+  public iterSwap;
 
   change(): void {
     // array of moves
@@ -48,9 +49,13 @@ export class TaquinComponent implements OnInit {
     // }
   }
 
+  sort(): void {
+    this.iterSwap = this.taquinArray.sort();
+  }
+
   switch(cellToSwitch: TaquinCell): void {
     // Coordinates x = vertical array, y = horizontal array
-    const voidCoordinates = this.findVoidCell();
+    const voidCoordinates = this.findVoidCell(9);
     const xVoid = voidCoordinates[0];
     const yVoid = voidCoordinates[1];
     // Four movements condition for voidCell = cellToSwitch
@@ -69,10 +74,10 @@ export class TaquinComponent implements OnInit {
     }
   }
 
-  findVoidCell(): Array<number> {
+  findVoidCell(x: number): Array<number> {
     for (let i = 0; i < this.cellsArray.length; i++) {
       for (let j = 0; j < this.cellsArray[i].length; j++) {
-        if (this.cellsArray[i][j].value === 9) {
+        if (this.cellsArray[i][j].value === x) {
           return [i, j];
         }
       }
@@ -87,6 +92,37 @@ export class TaquinComponent implements OnInit {
     }
   }
 
+  solvencyTaquin(): boolean {
+    const voidCell = this.findVoidCell(9);
+    const initVoidCell = [2, 2];
+    const xMove = initVoidCell[0] - voidCell[0];
+    const ymove = initVoidCell[1] - voidCell[1];
+    const finalMove = xMove + ymove;
+    let moves = 0;
+    const initArrayX = {'1': 0, '2': 0, '3': 0, '4': 1, '5': 1, '6': 1, '7': 2, '8': 2, '9': 2};
+    const initArrayY = {'1': 0, '2': 1, '3': 2, '4': 0, '5': 1, '6': 2, '7': 0, '8': 1, '9': 2};
+    let x;
+    let y;
+
+    for (const entries of this.cellsArray) {
+      for (const entry of entries) {
+        const u = entries.indexOf(entry);
+        console.log(u);
+        if (u > -1) {
+          x = Math.abs(initArrayX[entry.value] - entries.indexOf(entry));
+          y = Math.abs(initArrayY[entry.value] - this.cellsArray.indexOf(entries));
+          console.log(entries.indexOf(entry));
+          console.log(initArrayX[entry.value]);
+          console.log(initArrayY[entry.value]);
+          console.log(this.cellsArray.indexOf(entries));
+        }
+        moves += (x + y);
+      }
+    }
+    console.log(moves);
+    console.log(finalMove);
+    return true;
+  }
 
   constructor() {
   }

@@ -18,5 +18,10 @@
 <br>
 <div class="row justify-content-center">
   <button style="margin-right: 20px" class="btn btn-primary" (click)="change()" href="">SWAP</button>
-  <input type="number" min="1" max="1000" [(ngModel)]="swapNumber" placeholder="{{ swapNumber }}">
+  <input style="margin-right: 20px" type="number" min="1" max="1000" [(ngModel)]="swapNumber" placeholder="{{ swapNumber }}">
+  <button style="margin-right: 20px" class="btn btn-success" (click)="sort()" href="">Sort</button>
+  <p style="margin-right: 20px">Nombre de swap : {{ iterSwap }}</p>
+  <br>
+  <button style="margin-right: 20px" class="btn btn-dark" (click)="solvencyTaquin()" href="">Solvable ?</button>
+
 </div>

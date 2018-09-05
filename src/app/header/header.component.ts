@@ -1,5 +1,4 @@
 import {Component, HostListener, Input, OnInit} from '@angular/core';
-import {TaquinComponent} from '../taquin/taquin.component';
 
 @Component({
   selector: 'app-header',

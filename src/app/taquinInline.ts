@@ -27,7 +27,7 @@ export class TaquinInline {
 
   sort(): number {
     let i = 0;
-    let j = i + 1;
+    let j;
     let loop = 0;
     let sort = true;
     while (sort) {
@@ -49,7 +49,6 @@ export class TaquinInline {
     }
     return loop;
   }
-
   // Movements // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
   swap(coordinates: Array<number>, movement: number): void {
     const tempCell = this.taquinArray[coordinates[0]][coordinates[1]];
@@ -73,3 +72,4 @@ export class TaquinInline {
     }
   }
 }
+
