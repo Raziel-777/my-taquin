@@ -161,11 +161,17 @@ export class TaquinComponent implements OnInit {
       // Value of two last cells of 2 lines // WARNING natural value start at 0, but in my taquin value start at 1, so we add 1
       const initVal1 = i * this.cellsArray.length + this.cellsArray[i].length;
       const initVal2 = (i + 1) * this.cellsArray.length + this.cellsArray[i].length;
+      console.log(initVal1);
+      console.log(initVal2);
+      console.log(coord1);
+      console.log(coord2);
+      console.log(val1);
+      console.log(val2);
+      debugger;
       if (val1 === initVal1 && val2 === initVal2) {
         await this.move(1, 3);
         await this.move(1, 2);
       } else {
-        debugger;
         // Value of the last cell and his coordinates, this cell must not be at three bad position
         // This is initVal2
         // Value of three bad position
@@ -176,6 +182,7 @@ export class TaquinComponent implements OnInit {
           await this.movement(initVal2, [coord2[0], coord2[1] - 1]);
         }
         if (this.cellsArray[coord1[0]][coord1[1]].value !== initVal1) {
+          console.log('ici');
           await this.voidCellPositioning(initVal1);
           await this.movement(initVal1, [coord1[0], coord1[1]]);
         }
