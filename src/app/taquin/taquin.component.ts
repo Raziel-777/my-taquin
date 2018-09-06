@@ -141,17 +141,19 @@ export class TaquinComponent implements OnInit {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //            MAIN METHOD FOR RESOLVE TAQUIN        /////////////////////////////////////////////////////////////////////////
   async resolve() {
+    this.goMove();
     let coordinates = [];
     let value;
-    for (let i = 0; i < this.cellsArray.length; i++) {
+    for (let i = 0; i < this.cellsArray.length - 2; i++) {
       for (let j = 0; j < this.cellsArray[i].length - 2; j++) {
-        value = this.cellsArray[i][j].value;
+        value = i * this.cellsArray.length + j * this.cellsArray[i].length + 1;
         coordinates = this.findCoordinates(value);
         if (coordinates !== this.initial[value]) {
           await this.voidCellPositioning(value);
           await this.movement(value, this.initial[value]);
         }
       }
+      debugger;
       // Coordinates of two last cells of 2 lines
       const coord1 = [i, this.cellsArray[i].length - 1];
       const coord2 = [i + 1, this.cellsArray[i + 1].length - 1];
@@ -336,7 +338,6 @@ export class TaquinComponent implements OnInit {
   // Position the voidCell at right or left of the cellToMove (prefer right except when ycellToMove = max y)
   // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
   async voidCellPositioning(x: number) {
-    this.goMove();
     this.emptyCase = this.findCoordinates(9); // [x, y] voidCell
     const coordCell = this.findCoordinates(x); // [x, y] cellToMove
     const diffVert = this.emptyCase[0] - coordCell[0]; // =0 same line >0 void under cell <0 upper
@@ -400,7 +401,6 @@ export class TaquinComponent implements OnInit {
   // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
   // VoidCell at left of the cellToUp
   async upLeft(x: number) {
-    this.goMove();
     for (let i = 0; i < x; i++) {
       await this.move(1, 1);
       await this.move(1, 3);
@@ -411,7 +411,6 @@ export class TaquinComponent implements OnInit {
   }
 
   async downLeft(x: number) {
-    this.goMove();
     for (let i = 0; i < x; i++) {
       await this.move(1, 2);
       await this.move(1, 3);
@@ -423,7 +422,6 @@ export class TaquinComponent implements OnInit {
 
   // VoidCell at right of the cellToUp
   async upRight(x: number) {
-    this.goMove();
     for (let i = 0; i < x; i++) {
       await this.move(1, 1);
       await this.move(1, 4);
@@ -434,7 +432,6 @@ export class TaquinComponent implements OnInit {
   }
 
   async downRight(x: number) {
-    this.goMove();
     for (let i = 0; i < x; i++) {
       await this.move(1, 2);
       await this.move(1, 4);
@@ -542,7 +539,7 @@ export class TaquinComponent implements OnInit {
         }
       }
       resolve('Success!');
-    }).then();
+    });
   }
 
   goMove() {
@@ -552,9 +549,6 @@ export class TaquinComponent implements OnInit {
       if (firstElement) {
         self.taquinArray.swap(firstElement['coordinates'], firstElement['destination']);
         self.movements.splice(0, 1);
-
-      } else {
-        return;
       }
       self.goMove();
     }, 1000);
