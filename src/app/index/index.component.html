@@ -2,9 +2,9 @@
   <a class="navbar-brand" href="/">My Taquin</a>
   <div class="navbar-expand mr-auto">
     <div class="navbar-nav">
-      <button class="nav-item nav-link active" (click)="changePattern('mickey')" href="">Mickey</button>
-      <button class="nav-item nav-link" (click)="changePattern('lapinou')" href="">Lapinou</button>
-      <button class="nav-item nav-link" (click)="changePattern('mick')" href="">Horror Mickey</button>
+      <a class="nav-item nav-link active" (click)="changePattern('mickey', $event)" href="#">Mickey</a>
+      <a class="nav-item nav-link" (click)="changePattern('lapinou', $event)" href="">Lapinou</a>
+      <a class="nav-item nav-link" (click)="changePattern('mick', $event)" href="">Horror Mickey</a>
     </div>
   </div>
 </nav>

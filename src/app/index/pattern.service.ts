@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
-import {TaquinComponent} from '../taquin/taquin.component';
 
 @Injectable({
   providedIn: 'root'

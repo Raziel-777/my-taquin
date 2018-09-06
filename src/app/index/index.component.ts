@@ -9,7 +9,8 @@ import {PatternService} from './pattern.service';
 export class IndexComponent implements OnInit {
   private patternService: PatternService;
 
-  changePattern(pattern: string): void {
+  changePattern(pattern: string, event: Event): void {
+    event.preventDefault();
     this.patternService.callChangePattern(pattern);
   }
 

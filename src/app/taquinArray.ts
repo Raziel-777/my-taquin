@@ -2,7 +2,7 @@ import {TaquinCell} from './taquinCell';
 import {T} from '@angular/core/src/render3';
 
 export class TaquinArray {
-  public baseArray = [5, 7, 9, 6, 2, 4, 1, 3, 8];
+  public baseArray = [5, 7, 9, 2, 1, 4, 6, 3, 8];
   public taquinArray: TaquinCell[][];
   constructor() {
     this.taquinArray = [];
