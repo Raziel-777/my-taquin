@@ -21,8 +21,7 @@
   <input style="margin-right: 20px" type="number" min="1" max="1000" [(ngModel)]="swapNumber" placeholder="{{ swapNumber }}">
   <button style="margin-right: 20px" class="btn btn-success" (click)="sort()" href="">Sort</button>
   <p style="margin-right: 20px">Nombre de swap : {{ iterSwap }}</p>
-  <button style="margin-right: 20px" class="btn btn-info" (click)="voidCellPositioning()" href="">Resolve</button>
-  <button style="margin-right: 20px" class="btn btn-info" (click)="movement(1)" href="">Resolve 2</button>
+  <button style="margin-right: 20px" class="btn btn-info" (click)="resolve()" href="">Resolve</button>
 
   <br>
   <button *ngIf="solvency === null" style="margin-right: 20px" class="btn btn-dark" (click)="solvencyTaquin()" href="">Solvable ?</button>
