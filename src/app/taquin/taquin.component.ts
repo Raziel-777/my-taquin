@@ -141,7 +141,6 @@ export class TaquinComponent implements OnInit {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //            MAIN METHOD FOR RESOLVE TAQUIN        /////////////////////////////////////////////////////////////////////////
   async resolve() {
-    this.goMove();
     let coordinates = [];
     let value;
     for (let i = 0; i < this.cellsArray.length - 2; i++) {
@@ -153,7 +152,6 @@ export class TaquinComponent implements OnInit {
           await this.movement(value, this.initial[value]);
         }
       }
-      debugger;
       // Coordinates of two last cells of 2 lines
       const coord1 = [i, this.cellsArray[i].length - 1];
       const coord2 = [i + 1, this.cellsArray[i + 1].length - 1];
@@ -167,6 +165,7 @@ export class TaquinComponent implements OnInit {
         await this.move(1, 3);
         await this.move(1, 2);
       } else {
+        debugger;
         // Value of the last cell and his coordinates, this cell must not be at three bad position
         // This is initVal2
         // Value of three bad position
@@ -515,6 +514,7 @@ export class TaquinComponent implements OnInit {
   }
 
   move(diff, destination) {
+    this.goMove();
     const self = this;
     return new Promise(function (resolve, reject) {
       for (let i = 0; i < diff; i++) {
@@ -551,7 +551,7 @@ export class TaquinComponent implements OnInit {
         self.movements.splice(0, 1);
       }
       self.goMove();
-    }, 1000);
+    }, 100);
   }
 }
 
