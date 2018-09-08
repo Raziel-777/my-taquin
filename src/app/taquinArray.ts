@@ -1,20 +1,45 @@
 import {TaquinCell} from './taquinCell';
-import {T} from '@angular/core/src/render3';
 
+//  Class TaquinArray, 2 dimensional array build with unique taquinCell
 export class TaquinArray {
-  public baseArray = [8, 3, 1, 7, 9, 4, 6, 2, 5];
+  public naturalArray = [];
+  public baseArray = [];
+  public naturalTaquin: TaquinCell[][];
   public taquinArray: TaquinCell[][];
-  constructor() {
-    this.taquinArray = [];
-    let x = 0;
-    for (let i = 0; i < 3; i++) {
-      this.taquinArray[i] = [];
-      for (let j = 0; j < 3; j++) {
-        this.taquinArray[i][j] = new TaquinCell(this.baseArray[x]); // START WITH VALUE 1
-        x++;
+  public voidCellValue;
+
+  // Find coordinates of cell with his value
+  static findCoordinates(array: Array<Array<TaquinCell>>, x: number): Array<number> {
+    for (let i = 0; i < array.length; i++) {
+      for (let j = 0; j < array[i].length; j++) {
+        if (array[i][j].value === x) {
+          return [i, j];
+        }
       }
     }
   }
+  // Build one array with x *x value (number of cells) and shuffle ie before build the 2 dimensional array for the taquin.
+  constructor(x: number) {
+    for (let i = 0; i < x * x; i++) {
+      this.naturalArray.push(i);
+      this.baseArray.push(i);
+    }
+    this.shuffle();
+    this.taquinArray = [];
+    this.naturalTaquin = [];
+    let value = 0;
+    for (let i = 0; i < x; i++) {
+      this.taquinArray[i] = [];
+      this.naturalTaquin[i] = [];
+      for (let j = 0; j < x; j++) {
+        this.taquinArray[i][j] = new TaquinCell(this.baseArray[value]);
+        this.naturalTaquin[i][j] = new TaquinCell(this.naturalArray[value]);
+        value ++;
+      }
+    }
+    this.voidCellValue = x * x - 1;
+  }
+
   // shuffle array
   shuffle(): void {
     let ctr = this.baseArray.length, temp, index;
@@ -26,28 +51,7 @@ export class TaquinArray {
       this.baseArray[index] = temp;
     }
   }
-  // Movements // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
-  swap(coordinates: Array<number>, movement: number): void {
-    const tempCell = this.taquinArray[coordinates[0]][coordinates[1]];
-    switch (movement) {
-      case 1:
-        this.taquinArray[coordinates[0]][coordinates[1]] = this.taquinArray[coordinates[0] - 1][coordinates[1]];
-        this.taquinArray[coordinates[0] - 1][coordinates[1]] = tempCell;
-        break;
-      case 2:
-        this.taquinArray[coordinates[0]][coordinates[1]] = this.taquinArray[coordinates[0] + 1][coordinates[1]];
-        this.taquinArray[coordinates[0] + 1][coordinates[1]] = tempCell;
-        break;
-      case 3:
-        this.taquinArray[coordinates[0]][coordinates[1]] = this.taquinArray[coordinates[0]][coordinates[1] + 1];
-        this.taquinArray[coordinates[0]][coordinates[1] + 1] = tempCell;
-        break;
-      case 4:
-        this.taquinArray[coordinates[0]][coordinates[1]] = this.taquinArray[coordinates[0]][coordinates[1] - 1];
-        this.taquinArray[coordinates[0]][coordinates[1] - 1] = tempCell;
-        break;
-    }
-  }
+
   sort(): number {
     let compare = 0;
     let loop = 0;
@@ -119,28 +123,4 @@ export class TaquinArray {
     }
     return [loop, bool];
   }
-  // sort(): number {
-  //   let i = 0;
-  //   let j = i + 1;
-  //   let loop = 0;
-  //   let sort = true;
-  //   while (sort) {
-  //     sort = false;
-  //     while (i < this.taquinArray.length) {
-  //       j = i + 1;
-  //       while (j < this.taquinArray.length) {
-  //         if (this.taquinArray[i].value > this.taquinArray[j].value) {
-  //           const tempCell = this.taquinArray[i];
-  //           this.taquinArray[i] = this.taquinArray[j];
-  //           this.taquinArray[j] = tempCell;
-  //           loop += 1;
-  //           sort = true;
-  //         }
-  //         j++;
-  //       }
-  //       i++;
-  //     }
-  //   }
-  //   return loop;
-  // }
 }

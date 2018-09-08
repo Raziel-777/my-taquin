@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {TaquinArray} from '../taquinArray';
 import {TaquinCell} from '../taquinCell';
 import {PatternService} from '../index/pattern.service';
-import {a} from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-taquin',
@@ -12,16 +11,18 @@ import {a} from '@angular/core/src/render3';
 
 // --- MAIN COMPONENT TAQUIN --- //
 export class TaquinComponent implements OnInit {
-  private taquinArray = new TaquinArray();
-  public taquinDisplay = this.taquinArray.taquinArray;
+  private taquinObject: TaquinArray;
+  public taquin;
+  // Clone taquin before processing resolve
+  private cellsArray: Array<Array<TaquinCell>>;
   public swapNumber = 1;
   public iterSwap;
   public solvency = null;
   private movements = [];
   private emptyCase = [];
   private flag;
-  private voidCellValue = this.taquinDisplay.length * this.taquinDisplay[1].length;
-  private initial = {'1': [0, 0], '2': [0, 1], '3': [0, 2], '4': [1, 0], '5': [1, 1], '6': [1, 2], '7': [2, 0], '8': [2, 1], '9': [2, 2]};
+  private voidCellValue;
+  private initial;
 
   constructor(private patternService: PatternService) {
     patternService.changePattern$.subscribe(pattern => {
@@ -30,6 +31,11 @@ export class TaquinComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.taquinObject = new TaquinArray(3);
+    this.taquin = this.taquinObject.taquinArray;
+    this.cellsArray = this.taquin.map(x => Object.assign([], x));
+    this.voidCellValue = this.taquinObject.voidCellValue;
+    this.initial = this.taquinObject.naturalArray;
   }
 
   // Method to swap swapNumber cells
@@ -41,98 +47,104 @@ export class TaquinComponent implements OnInit {
     // SWAP with delay
     (function theLoop(i) {
       setTimeout(function () {
-        const x = Math.floor(Math.random() * self.taquinDisplay.length);
-        const y = Math.floor(Math.random() * self.taquinDisplay.length);
+        const x = Math.floor(Math.random() * self.taquin.length);
+        const y = Math.floor(Math.random() * self.taquin.length);
         const move = moves[Math.floor(Math.random() * moves.length)];
         const cell = [x, y];
         if ((move === 1 && x === 0) || (move === 2 && x === 2) || (move === 3 && y === 2) || (move === 4 && y === 0)) {
           console.log('CAN\'T MOVE');
         } else {
-          self.taquinArray.swap(cell, move);
+          self.swap(self.taquin, cell, move);
         }
         if (--i) {          // If i > 0, keep going
           theLoop(i);       // Call the loop again, and pass it the current value of i
         }
       }, 10);
     })(self.swapNumber);
-    // SWAP without delay
-    // for (let i = 0; i < this.swapNumber;) {
-    //   const x = Math.floor(Math.random() * _this.cellsArray.length);
-    //   const y = Math.floor(Math.random() * _this.cellsArray.length);
-    //   const move = moves[Math.floor(Math.random() * moves.length)];
-    //   const cell = [x, y];
-    //   if ((move === 1 && x === 0) || (move === 2 && x === 2) || (move === 3 && y === 2) || (move === 4 && y === 0)) {
-    //     console.log('MOUVEMENT IMPOSSIBLE');
-    //   } else {
-    //     i ++;
-    //     _this.taquinArray.swap(cell, move);
-    //   }
-    // }
   }
 
   // Auto sort 2D taquin
   sort(): void {
     this.solvency = null;
-    this.iterSwap = this.taquinArray.sort();
+    this.iterSwap = this.taquinObject.sort();
   }
 
   // Method to switch voidCell with one good cell to switch (taquin classic)
   switch(cellToSwitch: TaquinCell): void {
     // Coordinates x = vertical array, y = horizontal array
-    const voidCoordinates = this.findCoordinates(this.taquinDisplay, this.voidCellValue);
+    const voidCoordinates = TaquinArray.findCoordinates(this.taquin, this.voidCellValue);
     const xVoid = voidCoordinates[0];
     const yVoid = voidCoordinates[1];
     // Four movements condition for voidCell = cellToSwitch
-    if (xVoid + 1 in this.taquinDisplay
-      && this.taquinDisplay[xVoid + 1][yVoid] === cellToSwitch) {
-      this.taquinArray.swap([xVoid, yVoid], 2);
-    } else if (xVoid - 1 in this.taquinDisplay
-      && this.taquinDisplay[xVoid - 1][yVoid] === cellToSwitch) {
-      this.taquinArray.swap([xVoid, yVoid], 1);
-    } else if (yVoid + 1 in this.taquinDisplay[xVoid]
-      && this.taquinDisplay[xVoid][yVoid + 1] === cellToSwitch) {
-      this.taquinArray.swap([xVoid, yVoid], 3);
-    } else if (yVoid - 1 in this.taquinDisplay[xVoid]
-      && this.taquinDisplay[xVoid][yVoid - 1] === cellToSwitch) {
-      this.taquinArray.swap([xVoid, yVoid], 4);
+    if (xVoid + 1 in this.taquin && this.taquin[xVoid + 1][yVoid] === cellToSwitch) {
+      this.swap(this.taquin, [xVoid, yVoid], 2);
+    } else if (xVoid - 1 in this.taquin && this.taquin[xVoid - 1][yVoid] === cellToSwitch) {
+      this.swap(this.taquin, [xVoid, yVoid], 1);
+    } else if (yVoid + 1 in this.taquin[xVoid] && this.taquin[xVoid][yVoid + 1] === cellToSwitch) {
+      this.swap(this.taquin, [xVoid, yVoid], 3);
+    } else if (yVoid - 1 in this.taquin[xVoid] && this.taquin[xVoid][yVoid - 1] === cellToSwitch) {
+      this.swap(this.taquin, [xVoid, yVoid], 4);
     }
   }
 
   changePattern(pattern: string): void {
-    for (const entries of this.taquinDisplay) {
+    for (const entries of this.taquin) {
       for (const entry of entries) {
         entry.changePattern(pattern);
       }
     }
   }
 
+  // Movements // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
+  swap(array: Array<Array<TaquinCell>>, coordinates: Array<number>, movement: number): void {
+    const tempCell = array[coordinates[0]][coordinates[1]];
+    switch (movement) {
+      case 1:
+        array[coordinates[0]][coordinates[1]] = array[coordinates[0] - 1][coordinates[1]];
+        array[coordinates[0] - 1][coordinates[1]] = tempCell;
+        break;
+      case 2:
+        array[coordinates[0]][coordinates[1]] = array[coordinates[0] + 1][coordinates[1]];
+        array[coordinates[0] + 1][coordinates[1]] = tempCell;
+        break;
+      case 3:
+        array[coordinates[0]][coordinates[1]] = array[coordinates[0]][coordinates[1] + 1];
+        array[coordinates[0]][coordinates[1] + 1] = tempCell;
+        break;
+      case 4:
+        array[coordinates[0]][coordinates[1]] = array[coordinates[0]][coordinates[1] - 1];
+        array[coordinates[0]][coordinates[1] - 1] = tempCell;
+        break;
+    }
+  }
+
   solvencyTaquin(): void {
     // Find void Cell coordinates and calculate number of moves to set at initial position
-    const voidCell = this.findCoordinates(this.taquinDisplay, this.voidCellValue);
-    const initVoidCell = [this.taquinDisplay.length - 1, this.taquinDisplay[1].length - 1];
+    const voidCell = TaquinArray.findCoordinates(this.taquin, this.voidCellValue);
+    const initVoidCell = [this.taquin.length - 1, this.taquin[1].length - 1];
     const xVoidMove = initVoidCell[0] - voidCell[0];
     const yVoidMove = initVoidCell[1] - voidCell[1];
     const voidMove = xVoidMove + yVoidMove;
     let moves = 0;
+    const self = this;
     // Calculate number of transposition of cells adjacent or not, including voidCell, to solve the taquin
-    // Array of initial position in natural order [value, index]
-    const initArray = {'0': 1, '1': 2, '2': 3, '3': 4, '4': 5, '5': 6, '6': 7, '7': 8, '8': 9};
-    // Build one dimensional array with initial cellsArray
-    const cellsFinal = [];
-    for (const entries of this.taquinDisplay) {
+    // Build one dimensional array with taquin
+    const oneDimArray = [];
+    for (const entries of this.taquin) {
       for (const entry of entries) {
-        cellsFinal.push(entry);
+        oneDimArray.push(entry);
       }
     }
-    for (let i = cellsFinal.length - 1; i >= 0; i--) {
-      if (initArray[i] !== cellsFinal[i].value) {
+    for (let i = oneDimArray.length - 1; i >= 0; i--) {
+      if (this.taquinObject.naturalArray[i] !== oneDimArray[i].value) {
         moves++;
-        const tempCell = cellsFinal[i];
-        const u = cellsFinal.findIndex(function (element) {
-          return element.value === initArray[i];
+        const tempCell = oneDimArray[i];
+        // index of cell with which switch in onDimArray
+        const switchCell = oneDimArray.findIndex(function (element) {
+          return element.value === self.taquinObject.naturalArray[i];
         });
-        cellsFinal[i] = cellsFinal[u];
-        cellsFinal[u] = tempCell;
+        oneDimArray[i] = oneDimArray[switchCell];
+        oneDimArray[switchCell] = tempCell;
       }
     }
     // If parity of voidCell moves = parity of total moves for others cells, solvency is true (cf: https://fr.wikipedia.org/wiki/Taquin)
@@ -143,489 +155,459 @@ export class TaquinComponent implements OnInit {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //            MAIN METHOD FOR RESOLVE TAQUIN        /////////////////////////////////////////////////////////////////////////
   resolve() {
-    // Clone taquin before processing resolve
-    const cellsArray = this.taquinDisplay.map(x => Object.assign([], x));
-    let coordinates = [];
-    let value;
-    for (let i = 0; i < cellsArray.length - 2; i++) {
-      for (let j = 0; j < cellsArray[i].length - 2; j++) {
-        value = i * cellsArray.length + j * cellsArray[i].length + 1;
-        coordinates = this.findCoordinates(cellsArray, value);
-        if (coordinates !== this.initial[value]) {
-          this.voidCellPositioning(cellsArray, value);
-          this.movement(cellsArray, value, this.initial[value]);
+    for (let i = 0; i < this.cellsArray.length - 2; i++) {
+      for (let j = 0; j < this.cellsArray[i].length - 2; j++) {
+        const value = this.cellsArray[i][j].value;
+        if (value !== this.taquinObject.naturalTaquin[i][j].value) {
+          this.voidCellPositioning(value);
+          this.movement(value, [i, j]);
         }
       }
+      // Two last cells of each line
       // Coordinates of two last cells of 2 lines
-      const coord1 = [i, cellsArray[i].length - 1];
-      const coord2 = [i + 1, cellsArray[i + 1].length - 1];
+      const coord1 = [i, this.cellsArray[i].length - 1];
+      const coord2 = [i + 1, this.cellsArray[i + 1].length - 1];
       // Value of two last cells in the taquin
-      const val1 = cellsArray[coord1[0]][coord1[1]].value;
-      const val2 = cellsArray[coord2[0]][coord2[1]].value;
-      // Value of two last cells of 2 lines // WARNING natural value start at 0, but in my taquin value start at 1, so we add 1
-      const initVal1 = i * cellsArray.length + cellsArray[i].length - 1;
-      const initVal2 = i * cellsArray.length + cellsArray[i].length;
+      const val1 = this.cellsArray[coord1[0]][coord1[1]].value;
+      const val2 = this.cellsArray[coord2[0]][coord2[1]].value;
+      // Value of two last cells of 2 lines
+      const initVal1 = this.taquinObject.naturalTaquin[coord1[0]][coord1[1]].value;
+      const initVal2 = this.taquinObject.naturalTaquin[coord2[0]][coord2[1]].value;
       if (val1 === initVal1 && val2 === initVal2) {
-        this.move(cellsArray, 1, 3);
-        this.move(cellsArray, 1, 2);
+        this.move(1, 3);
+        this.move(1, 2);
       } else {
         // Value of the last cell and his coordinates, this cell must not be at three bad position
-        // This is initVal2
-        // Value of three bad position
-        // This is val1, val2 and val3
-        const val3 = cellsArray[coord2[0]][coord2[1] - 1].value;
+        // Value of three bad position this is val1, val2 and val3
+        const val3 = this.cellsArray[coord2[0]][coord2[1] - 1].value;
         if (initVal2 === val1 || initVal2 === val2 || initVal2 === val3) {
-          this.voidCellPositioning(cellsArray, initVal2);
-          this.movement(cellsArray, initVal2, [coord2[0], coord2[1] - 2]);
+          this.voidCellPositioning(initVal2);
+          this.movement(initVal2, [coord2[0], coord2[1] - 2]);
         }
-        if (cellsArray[coord1[0]][coord1[1]].value !== initVal1) {
-          this.voidCellPositioning(cellsArray, initVal1);
-          this.movement(cellsArray, initVal1, [coord1[0], coord1[1]]);
+        if (this.cellsArray[coord1[0]][coord1[1]].value !== initVal1) {
+          this.voidCellPositioning(initVal1);
+          this.movement(initVal1, [coord1[0], coord1[1]]);
         }
-        if (cellsArray[coord2[0]][coord2[1]].value !== initVal2) {
-          this.voidCellPositioning(cellsArray, initVal2);
-          this.movement(cellsArray, initVal2, [coord2[0], coord2[1]]);
+        if (this.cellsArray[coord2[0]][coord2[1]].value !== initVal2) {
+          this.voidCellPositioning(initVal2);
+          this.movement(initVal2, [coord2[0], coord2[1]]);
         }
-        this.lastHook(cellsArray);
+        this.lastHook();
       }
     }
     // Case vide mise tout à gauche
-    for (let i = 0; i < cellsArray[cellsArray.length - 2].length - 1; i++) {
-      this.move(cellsArray, 1, 4);
+    for (let i = 0; i < this.cellsArray[this.cellsArray.length - 2].length - 1; i++) {
+      this.move(1, 4);
     }
-    for (let i = 0; i < cellsArray[cellsArray.length - 2].length - 2; i++) {
-      const val1 = cellsArray[cellsArray.length - 2].length * (cellsArray.length - 2) + i + 1; // +1 because value start 1
-      const val2 = cellsArray[cellsArray.length - 2].length * (cellsArray.length - 2) +
-        cellsArray[cellsArray.length - 2].length + i + 1; // +1 because value start 1
+    for (let i = 0; i < this.cellsArray[this.cellsArray.length - 2].length - 2; i++) {
+      const val1 = this.cellsArray[this.cellsArray.length - 2].length * (this.cellsArray.length - 2) + i + 1; // +1 because value start 1
+      const val2 = this.cellsArray[this.cellsArray.length - 2].length * (this.cellsArray.length - 2) +
+        this.cellsArray[this.cellsArray.length - 2].length + i + 1; // +1 because value start 1
       const val3 = val1 + 1;
       const val4 = val2 + 1;
       // Coordinates
-      const coord1 = this.findCoordinates(cellsArray, val1);
-      const coord2 = this.findCoordinates(cellsArray, val2);
+      const coord1 = TaquinArray.findCoordinates(this.cellsArray, val1);
+      const coord2 = TaquinArray.findCoordinates(this.cellsArray, val2);
       const initCoord1 = this.initial[val1];
       const initCoord2 = this.initial[val2];
       const initCoord3 = this.initial[val3];
       const initCoord4 = this.initial[val4];
       if (coord1 === initCoord1 && coord2 === initCoord2) {
-        this.move(cellsArray, 1, 2);
-        this.move(cellsArray, 1, 3);
-        this.move(cellsArray, 1, 1);
+        this.move(1, 2);
+        this.move(1, 3);
+        this.move(1, 1);
       } else {
         if (coord2 === initCoord2 || coord2 === initCoord3 || coord2 === initCoord4) {
-          this.voidCellPositioning(cellsArray, val2);
-          this.movement(cellsArray, val2, this.initial[val1 + 2]);
+          this.voidCellPositioning(val2);
+          this.movement(val2, this.initial[val1 + 2]);
         }
-        if (cellsArray[cellsArray.length - 1][i].value !== val1) {
-          this.voidCellPositioning(cellsArray, val1);
-          this.movement(cellsArray, val1, this.initial[val2]);
+        if (this.cellsArray[this.cellsArray.length - 1][i].value !== val1) {
+          this.voidCellPositioning(val1);
+          this.movement(val1, this.initial[val2]);
         }
-        if (cellsArray[cellsArray.length - 1][i + 1].value !== val2) {
-          this.voidCellPositioning(cellsArray, val2);
-          this.movement(cellsArray, val2, this.initial[val2 + 1]);
+        if (this.cellsArray[this.cellsArray.length - 1][i + 1].value !== val2) {
+          this.voidCellPositioning(val2);
+          this.movement(val2, this.initial[val2 + 1]);
         }
-        this.hook(cellsArray);
+        this.hook();
       }
     }
-    this.final(cellsArray);
+    this.final();
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //            MOVEMENTS        //////////////////////////////////////////////////////////////////////////////////////////////
   // Method to move cell at his initial position with this.initial when voidCell is positioning
-  movement(array: Array<Array<TaquinCell>>, value: number, finalCoordinates: Array<number>) {
-    let coordinates = this.findCoordinates(array, value);
-    let diffVert = coordinates[0] - finalCoordinates[0];
-    let diffHori = coordinates[1] - finalCoordinates[1];
+  // Value = cell to move, finalCoordinates = array of target position
+  movement(value: number, finalCoordinates: Array<number>) {
+    let cellToMove = TaquinArray.findCoordinates(this.cellsArray, value);
+    let diffVert = cellToMove[0] - finalCoordinates[0];
+    let diffHori = cellToMove[1] - finalCoordinates[1];
     if (diffVert > 0 && diffHori > 0 && this.flag === 1) {
-      this.upRight(array, diffVert);
-      this.movingLeftByDown(array, diffHori);
+      this.upRight(diffVert);
+      this.strafeLeftByDown(diffHori);
     } else if (diffVert > 0 && diffHori === 0 && this.flag === 1) {
-      this.upRight(array, diffVert);
+      this.upRight(diffVert);
     } else if (diffVert > 0 && diffHori > 0 && this.flag === -1) {
-      this.upLeft(array, diffVert);
-      this.move(array, 1, 3);
-      this.movingLeftByDown(array, diffHori - 1);
+      this.upLeft(diffVert);
+      this.move(1, 3);
+      this.strafeLeftByDown(diffHori - 1);
     } else if (diffVert > 0 && diffHori === 0 && this.flag === -1) {
-      if (coordinates[1] === array[coordinates[0]].length - 1) {
-        this.upLeft(array, diffVert);
-      } else if (coordinates[1] < array[coordinates[0]].length - 1) {
-        if (coordinates[0] === array.length - 1) {
-          this.hookUp(array);
-          this.upRight(array, diffVert);
-        } else if (coordinates[0] < array.length - 1) {
-          this.hookDown(array);
-          this.upRight(array, diffVert);
+      if (cellToMove[1] === this.cellsArray[cellToMove[0]].length - 1) {
+        this.upLeft(diffVert);
+      } else if (cellToMove[1] < this.cellsArray[cellToMove[0]].length - 1) {
+        if (cellToMove[0] === this.cellsArray.length - 1) {
+          this.hookUp();
+          this.upRight(diffVert);
+        } else if (cellToMove[0] < this.cellsArray.length - 1) {
+          this.hookDown();
+          this.upRight(diffVert);
         }
       }
     } else if (diffVert > 0 && diffHori < 0 && this.flag === 1) {
-      if (coordinates[0] === array.length - 1) {
-        this.move(array, 1, 4);
-        this.movingRightByTop(array, -diffHori - 1);
-        coordinates = this.findCoordinates(array, value);
-        diffVert = coordinates[0] - finalCoordinates[0];
-        if (coordinates[1] < array[coordinates[0]].length - 1) {
-          this.hookUp(array);
-          this.upRight(array, diffVert);
-        } else if (coordinates[1] === array[coordinates[0]].length - 1) {
-          this.upLeft(array, diffVert);
+      if (cellToMove[0] === this.cellsArray.length - 1) {
+        this.move(1, 4);
+        this.strafeRightByTop(-diffHori - 1);
+        cellToMove = TaquinArray.findCoordinates(this.cellsArray, value);
+        diffVert = cellToMove[0] - finalCoordinates[0];
+        if (cellToMove[1] < this.cellsArray[cellToMove[0]].length - 1) {
+          this.hookUp();
+          this.upRight(diffVert);
+        } else if (cellToMove[1] === this.cellsArray[cellToMove[0]].length - 1) {
+          this.upLeft(diffVert);
         }
-      } else if (coordinates[0] < array.length - 1) {
-        this.move(array, 1, 4);
-        this.movingRightByDown(array, -diffHori - 1);
-        coordinates = this.findCoordinates(array, value);
-        diffVert = coordinates[0] - finalCoordinates[0];
-        if (coordinates[1] < array[coordinates[0]].length - 1) {
-          this.hookDown(array);
-          this.upLeft(array, diffVert);
-        } else if (coordinates[1] === array[coordinates[0]].length - 1) {
-          this.upLeft(array, diffVert);
+      } else if (cellToMove[0] < this.cellsArray.length - 11) {
+        this.move(1, 4);
+        this.strafeRightByDown(-diffHori - 1);
+        cellToMove = TaquinArray.findCoordinates(this.cellsArray, value);
+        diffVert = cellToMove[0] - finalCoordinates[0];
+        if (cellToMove[1] < this.cellsArray[cellToMove[0]].length - 1) {
+          this.hookDown();
+          this.upRight(diffVert);
+        } else if (cellToMove[1] === this.cellsArray[cellToMove[0]].length - 1) {
+          this.upLeft(diffVert);
         }
       }
     } else if (diffVert > 0 && diffHori < 0 && this.flag === -1) {
-      if (coordinates[0] === array.length - 1) {
-        this.movingRightByTop(array, -diffHori);
-        coordinates = this.findCoordinates(array, value);
-        diffVert = coordinates[0] - finalCoordinates[0];
-        if (coordinates[1] < array[coordinates[0]].length - 1) {
-          this.hookUp(array);
-          this.upRight(array, diffVert - 1);
-        } else if (coordinates[1] === array[coordinates[0]].length - 1) {
-          this.upLeft(array, diffVert);
+      if (cellToMove[0] === this.cellsArray.length - 1) {
+        this.strafeRightByTop(-diffHori);
+        cellToMove = TaquinArray.findCoordinates(this.cellsArray, value);
+        diffVert = cellToMove[0] - finalCoordinates[0];
+        if (cellToMove[1] < this.cellsArray[cellToMove[0]].length - 1) {
+          this.hookUp();
+          this.upRight(diffVert - 1);
+        } else if (cellToMove[1] === this.cellsArray[cellToMove[0]].length - 1) {
+          this.upLeft(diffVert);
         }
-      } else if (coordinates[0] < array.length - 1) {
-        this.movingRightByDown(array, -diffHori);
-        coordinates = this.findCoordinates(array, value);
-        diffVert = coordinates[0] - finalCoordinates[0];
-        if (coordinates[1] < array[coordinates[0]].length - 1) {
-          this.hookDown(array);
-          this.upRight(array, diffVert);
-        } else if (coordinates[1] === array[coordinates[0]].length - 1) {
-          this.upLeft(array, diffVert);
+      } else if (cellToMove[0] < this.cellsArray.length - 1) {
+        this.strafeRightByDown(-diffHori);
+        cellToMove = TaquinArray.findCoordinates(this.cellsArray, value);
+        diffVert = cellToMove[0] - finalCoordinates[0];
+        if (cellToMove[1] < this.cellsArray[cellToMove[0]].length - 1) {
+          this.hookDown();
+          this.upRight(diffVert);
+        } else if (cellToMove[1] === this.cellsArray[cellToMove[0]].length - 1) {
+          this.upLeft(diffVert);
         }
       }
     } else if (diffVert === 0 && diffHori < 0 && this.flag === 1) {
-      if (coordinates[1] === array.length - 1) {
-        this.move(array, 1, 4);
-        this.movingRightByTop(array, -diffHori - 1);
-      } else if (coordinates[1] < array.length - 1) {
-        this.move(array, 1, 4);
-        this.movingRightByDown(array, -diffHori - 1);
+      if (cellToMove[0] === this.cellsArray.length - 1) {
+        this.move(1, 4);
+        this.strafeRightByTop(-diffHori - 1);
+      } else if (cellToMove[0] < this.cellsArray.length - 1) {
+        this.move(1, 4);
+        this.strafeRightByDown(-diffHori - 1);
       }
     } else if (diffVert === 0 && diffHori < 0 && this.flag === -1) {
-      if (coordinates[1] === array.length - 1) {
-        this.movingRightByTop(array, -diffHori);
-      } else if (coordinates[1] === array.length - 1) {
-        this.movingRightByDown(array, -diffHori);
+      if (cellToMove[0] === this.cellsArray.length - 1) {
+        this.strafeRightByTop(-diffHori);
+      } else if (cellToMove[0] < this.cellsArray.length - 1) {
+        this.strafeRightByDown(-diffHori);
       }
     } else if (diffVert === 0 && diffHori > 0 && this.flag === 1) {
-      if (coordinates[1] === array.length - 1) {
-        this.movingLeftByTop(array, diffHori);
-      } else if (coordinates[1] < array.length - 1) {
-        this.movingLeftByDown(array, diffHori);
+      if (cellToMove[0] === this.cellsArray.length - 1) {
+        this.strafeLeftByTop(diffHori);
+      } else if (cellToMove[0] < this.cellsArray.length - 1) {
+        this.strafeLeftByDown(diffHori);
       }
     } else if (diffVert === 0 && diffHori > 0 && this.flag === -1) {
-      if (coordinates[1] === array.length - 1) {
-        this.move(array, 1, 3);
-        this.movingLeftByTop(array, diffHori - 1);
-      } else if (coordinates[1] < array.length - 1) {
-        this.move(array, 1, 3);
-        this.movingLeftByDown(array, diffHori - 1);
+      if (cellToMove[0] === this.cellsArray.length - 1) {
+        this.move(1, 3);
+        this.strafeLeftByTop(diffHori - 1);
+      } else if (cellToMove[0] < this.cellsArray.length - 1) {
+        this.move(1, 3);
+        this.strafeLeftByDown(diffHori - 1);
       }
     } else if (diffVert < 0 && diffHori > 0 && this.flag === 1) {
-      this.downRight(array, -diffVert);
-      coordinates = this.findCoordinates(array, value);
-      diffHori = coordinates[1] - finalCoordinates[1];
-      if (coordinates[1] < array.length - 1) {
-        this.movingLeftByDown(array, diffHori);
-      } else if (coordinates[1] === array.length - 1) {
-        this.movingLeftByTop(array, diffHori);
+      this.downRight(-diffVert);
+      cellToMove = TaquinArray.findCoordinates(this.cellsArray, value);
+      diffHori = cellToMove[1] - finalCoordinates[1];
+      if (cellToMove[0] < this.cellsArray.length - 1) {
+        this.strafeLeftByDown(diffHori);
+      } else if (cellToMove[0] === this.cellsArray.length - 1) {
+        this.strafeLeftByTop(diffHori);
       }
     } else if (diffVert < 0 && diffHori > 0 && this.flag === -1) {
-      this.downLeft(array, -diffVert);
-      coordinates = this.findCoordinates(array, value);
-      diffHori = coordinates[1] - finalCoordinates[1];
-      if (coordinates[1] < array.length - 1) {
-        this.move(array, 1, 3);
-        this.movingLeftByDown(array, diffHori - 1);
-      } else if (coordinates[1] < array.length - 1) {
-        this.move(array, 1, 3);
-        this.movingLeftByTop(array, diffHori - 1);
+      this.downLeft(-diffVert);
+      cellToMove = TaquinArray.findCoordinates(this.cellsArray, value);
+      diffHori = cellToMove[1] - finalCoordinates[1];
+      if (cellToMove[0] < this.cellsArray.length - 1) {
+        this.move(1, 3);
+        this.strafeLeftByDown(diffHori - 1);
+      } else if (cellToMove[0] === this.cellsArray.length - 1) {
+        this.move(1, 3);
+        this.strafeLeftByTop(diffHori - 1);
       }
     } else if (diffVert < 0 && diffHori < 0 && this.flag === 1) {
-      this.downRight(array, -diffVert);
-      this.move(array, 1, 4);
-      this.movingRightByTop(array, -diffHori - 1);
+      this.downRight(-diffVert);
+      this.move(1, 4);
+      this.strafeRightByTop(-diffHori - 1);
     } else if (diffVert < 0 && diffHori < 0 && this.flag === -1) {
-      this.downLeft(array, -diffVert);
-      this.movingRightByTop(array, -diffHori);
+      this.downLeft(-diffVert);
+      this.strafeRightByTop(-diffHori);
     } else if (diffVert < 0 && diffHori === 0 && this.flag === 1) {
-      this.downRight(array, -diffVert);
+      this.downRight(-diffVert);
     } else if (diffVert < 0 && diffHori === 0 && this.flag === -1) {
-      this.downLeft(array, -diffVert);
-    }
-  }
-
-  // Hook
-  hook(array: Array<Array<TaquinCell>>) {
-    this.move(array, 1, 1);
-    this.move(array, 1, 4);
-    this.move(array, 1, 4);
-    this.move(array, 1, 2);
-    this.move(array, 1, 3);
-    this.move(array, 1, 1);
-  }
-
-  // Last hook of each line
-  lastHook(array: Array<Array<TaquinCell>>) {
-    this.move(array, 1, 1);
-    this.move(array, 1, 3);
-    this.move(array, 1, 2);
-  }
-
-  // Final cycle
-  final(array: Array<Array<TaquinCell>>) {
-    this.move(array, 1, 3);
-    // Calculate value of cell to check (N-2 and P-2)
-    // Value of three check cells for final cycle
-    const val1 = (array.length - 2) * array[array.length - 2].length + array[array.length - 2].length - 1;
-    const val2 = val1 + 1;
-    const val3 = val1 + array[array.length - 2].length;
-    // Coordinates of multiple value
-    const coord1 = this.findCoordinates(array, val1);
-    const coord2 = this.findCoordinates(array, val2);
-    const coord3 = this.findCoordinates(array, val3);
-    const coordInit = this.initial[val1];
-    if (coord1 === coordInit) {
-      this.move(array, 1, 2);
-    } else if (coord2 === coordInit) {
-      this.move(array, 1, 4);
-      this.move(array, 1, 2);
-      this.move(array, 1, 3);
-    } else if (coord3 === coordInit) {
-      this.move(array, 1, 2);
-      this.move(array, 1, 4);
-      this.move(array, 1, 1);
-      this.move(array, 1, 3);
-      this.move(array, 1, 2);
+      this.downLeft(-diffVert);
     }
   }
 
   // Position the voidCell at right or left of the cellToMove (prefer right except when ycellToMove = max y)
   // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
-  voidCellPositioning(array: Array<Array<TaquinCell>>, value: number) {
-    this.emptyCase = this.findCoordinates(array, this.voidCellValue); // [x, y] voidCell
-    const coordCell = this.findCoordinates(array, value); // [x, y] cellToMove
+  // Value is the cell to change value
+  voidCellPositioning(value: number) {
+    this.emptyCase = TaquinArray.findCoordinates(this.cellsArray, this.voidCellValue); // [x, y] voidCell
+    let coordCell = TaquinArray.findCoordinates(this.cellsArray, value); // [x, y] cellToMove
     const diffVert = this.emptyCase[0] - coordCell[0]; // =0 same line >0 void under cell <0 upper
     const diffHori = this.emptyCase[1] - coordCell[1]; // =0 same column >0 at right <0 at left
     if (diffVert >= 0 && diffHori > 0) {
-      this.move(array, diffVert, 1);
-      this.move(array, diffHori - 1, 4);
+      this.move(diffVert, 1);
+      this.move(diffHori - 1, 4);
       this.flag = 1;
     } else if (diffVert > 0 && diffHori === 0) {
-      this.move(array, diffVert - 1, 1);
-      if (this.emptyCase[1] < array[this.emptyCase[0]].length - 1) {
-        this.move(array, 1, 3);
-        this.move(array, 1, 1);
+      this.move(diffVert - 1, 1);
+      coordCell = TaquinArray.findCoordinates(this.cellsArray, value);
+      if (coordCell[1] < this.cellsArray[coordCell[0]].length - 1) {
+        this.move(1, 3);
+        this.move(1, 1);
         this.flag = 1;
-      } else if (this.emptyCase[1] === array[this.emptyCase[0]].length - 1) {
-        this.move(array, 1, 4);
-        this.move(array, 1, 1);
+      } else if (coordCell[1] === this.cellsArray[coordCell[0]].length - 1) {
+        this.move(1, 4);
+        this.move(1, 1);
         this.flag = -1;
       }
     } else if (diffVert > 0 && diffHori < 0) {
-      this.move(array, -diffHori, 3);
-      this.move(array, diffVert - 1, 1);
-      if (this.emptyCase[1] < array[this.emptyCase[0]].length - 1) {
-        this.move(array, 1, 3);
-        this.move(array, 1, 1);
+      this.move(-diffHori, 3);
+      this.move(diffVert - 1, 1);
+      coordCell = TaquinArray.findCoordinates(this.cellsArray, value);
+      if (coordCell[1] < this.cellsArray[coordCell[0]].length - 1) {
+        this.move(1, 3);
+        this.move(1, 1);
         this.flag = 1;
-      } else if (this.emptyCase[1] === array[this.emptyCase[0]].length - 1) {
-        this.move(array, 1, 4);
-        this.move(array, 1, 1);
+      } else {
+        this.move(1, 4);
+        this.move(1, 1);
         this.flag = -1;
       }
     } else if (diffVert === 0 && diffHori > 0) {
-      this.move(array, diffHori - 1, 4);
+      this.move(diffHori - 1, 4);
       this.flag = 1;
     } else if (diffVert === 0 && diffHori < 0) {
-      this.move(array, -diffHori - 1, 3);
+      this.move(-diffHori - 1, 3);
       this.flag = -1;
     } else if (diffVert < 0 && diffHori > 0) {
-      this.move(array, -diffVert, 2);
-      this.move(array, diffHori - 1, 4);
+      this.move(-diffVert, 2);
+      this.move(diffHori - 1, 4);
       this.flag = 1;
     } else if (diffVert < 0 && diffHori === 0) {
-      this.move(array, -diffVert - 1, 2);
-      if (this.emptyCase[1] < array[this.emptyCase[0]].length - 1) {
-        this.move(array, 1, 3);
-        this.move(array, 1, 2);
+      this.move(-diffVert - 1, 2);
+      coordCell = TaquinArray.findCoordinates(this.cellsArray, value);
+      if (coordCell[1] < this.cellsArray[coordCell[0]].length - 1) {
+        this.move(1, 3);
+        this.move(1, 2);
         this.flag = 1;
-      } else if (this.emptyCase[1] === array[this.emptyCase[0]].length - 1) {
-        this.move(array, 1, 4);
-        this.move(array, 1, 2);
+      } else if (coordCell[1] === this.cellsArray[coordCell[0]].length - 1) {
+        this.move(1, 4);
+        this.move(1, 2);
         this.flag = -1;
       }
     } else if (diffVert < 0 && diffHori < 0) {
-      this.move(array, -diffHori - 1, 3);
-      this.move(array, -diffVert, 2);
+      this.move(-diffHori - 1, 3);
+      this.move(-diffVert, 2);
       this.flag = -1;
+    }
+  }
+
+  // Move emptyCase with method swap
+  move(diff: number, destination: number) {
+    for (let i = 0; i < diff; i++) {
+      this.emptyCase = TaquinArray.findCoordinates(this.cellsArray, this.voidCellValue);
+      this.movements.push(destination);
+      this.swap(this.cellsArray, this.emptyCase, destination);
+    }
+    this.emptyCase = TaquinArray.findCoordinates(this.cellsArray, this.voidCellValue);
+  }
+
+  // Hook
+  hook() {
+    this.move(1, 1);
+    this.move(1, 4);
+    this.move(1, 4);
+    this.move(1, 2);
+    this.move(1, 3);
+    this.move(1, 1);
+  }
+
+  // Last hook of each line
+  lastHook() {
+    this.move(1, 1);
+    this.move(1, 3);
+    this.move(1, 2);
+  }
+
+  // Final cycle
+  final() {
+    this.move(1, 3);
+    // Calculate value of cell to check (N-2 and P-2)
+    // Value of three check cells for final cycle
+    const val1 = (this.cellsArray.length - 2) * this.cellsArray[this.cellsArray.length - 2].length
+      + this.cellsArray[this.cellsArray.length - 2].length - 1;
+    const val2 = val1 + 1;
+    const val3 = val1 + this.cellsArray[this.cellsArray.length - 2].length;
+    // Coordinates of multiple value
+    const coord1 = TaquinArray.findCoordinates(this.cellsArray, val1);
+    const coord2 = TaquinArray.findCoordinates(this.cellsArray, val2);
+    const coord3 = TaquinArray.findCoordinates(this.cellsArray, val3);
+    const coordInit = this.initial[val1];
+    if (coord1 === coordInit) {
+      this.move(1, 2);
+    } else if (coord2 === coordInit) {
+      this.move(1, 4);
+      this.move(1, 2);
+      this.move(1, 3);
+    } else if (coord3 === coordInit) {
+      this.move(1, 2);
+      this.move(1, 4);
+      this.move(1, 1);
+      this.move(1, 3);
+      this.move(1, 2);
     }
   }
 
   // CLIMB OR DOWN ONE CELL
   // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
   // VoidCell at left of the cellToUp
-  upLeft(array: Array<Array<TaquinCell>>, x: number) {
+  upLeft(x: number) {
     for (let i = 0; i < x; i++) {
-      this.move(array, 1, 1);
-      this.move(array, 1, 3);
-      this.move(array, 1, 2);
-      this.move(array, 1, 4);
-      this.move(array, 1, 1);
+      this.move(1, 1);
+      this.move(1, 3);
+      this.move(1, 2);
+      this.move(1, 4);
+      this.move(1, 1);
     }
   }
 
-  downLeft(array: Array<Array<TaquinCell>>, x: number) {
+  downLeft(x: number) {
     for (let i = 0; i < x; i++) {
-      this.move(array, 1, 2);
-      this.move(array, 1, 3);
-      this.move(array, 1, 1);
-      this.move(array, 1, 4);
-      this.move(array, 1, 2);
+      this.move(1, 2);
+      this.move(1, 3);
+      this.move(1, 1);
+      this.move(1, 4);
+      this.move(1, 2);
     }
   }
 
   // VoidCell at right of the cellToUp
-  upRight(array: Array<Array<TaquinCell>>, x: number) {
+  upRight(x: number) {
     for (let i = 0; i < x; i++) {
-      this.move(array, 1, 1);
-      this.move(array, 1, 4);
-      this.move(array, 1, 2);
-      this.move(array, 1, 3);
-      this.move(array, 1, 1);
+      this.move(1, 1);
+      this.move(1, 4);
+      this.move(1, 2);
+      this.move(1, 3);
+      this.move(1, 1);
     }
   }
 
-  downRight(array: Array<Array<TaquinCell>>, x: number) {
+  downRight(x: number) {
     for (let i = 0; i < x; i++) {
-      this.move(array, 1, 2);
-      this.move(array, 1, 4);
-      this.move(array, 1, 1);
-      this.move(array, 1, 3);
-      this.move(array, 1, 2);
+      this.move(1, 2);
+      this.move(1, 4);
+      this.move(1, 1);
+      this.move(1, 3);
+      this.move(1, 2);
     }
   }
 
-  // MOVING LEFT OR RIGHT ONE CELL
+  // Strafe left or right by top or bottom
   // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
   // Moving from top
-  movingLeftByTop(array: Array<Array<TaquinCell>>, x: number) {
+  strafeLeftByTop(x: number) {
     for (let i = 0; i < x; i++) {
-      this.move(array, 1, 1);
-      this.move(array, 1, 4);
-      this.move(array, 1, 4);
-      this.move(array, 1, 2);
-      this.move(array, 1, 3);
+      this.move(1, 1);
+      this.move(1, 4);
+      this.move(1, 4);
+      this.move(1, 2);
+      this.move(1, 3);
     }
   }
 
-  movingRightByTop(array: Array<Array<TaquinCell>>, x: number) {
+  strafeRightByTop(x: number) {
     for (let i = 0; i < x; i++) {
-      this.move(array, 1, 1);
-      this.move(array, 1, 3);
-      this.move(array, 1, 3);
-      this.move(array, 1, 2);
-      this.move(array, 1, 4);
+      this.move(1, 1);
+      this.move(1, 3);
+      this.move(1, 3);
+      this.move(1, 2);
+      this.move(1, 4);
     }
   }
 
   // Moving from down
-  movingLeftByDown(array: Array<Array<TaquinCell>>, x: number) {
+  strafeLeftByDown(x: number) {
     for (let i = 0; i < x; i++) {
-      this.move(array, 1, 2);
-      this.move(array, 1, 4);
-      this.move(array, 1, 4);
-      this.move(array, 1, 1);
-      this.move(array, 1, 3);
+      this.move(1, 2);
+      this.move(1, 4);
+      this.move(1, 4);
+      this.move(1, 1);
+      this.move(1, 3);
     }
   }
 
-  movingRightByDown(array: Array<Array<TaquinCell>>, x: number) {
+  strafeRightByDown(x: number) {
     for (let i = 0; i < x; i++) {
-      this.move(array, 1, 2);
-      this.move(array, 1, 3);
-      this.move(array, 1, 3);
-      this.move(array, 1, 1);
-      this.move(array, 1, 4);
+      this.move(1, 2);
+      this.move(1, 3);
+      this.move(1, 3);
+      this.move(1, 1);
+      this.move(1, 4);
     }
   }
 
   // Hook for move cellVoid around cell to move (up or down and right)
-  hookUp(array: Array<Array<TaquinCell>>) {
-    this.move(array, 1, 1);
-    this.move(array, 1, 3);
-    this.move(array, 1, 3);
-    this.move(array, 1, 2);
+  hookUp() {
+    this.move(1, 1);
+    this.move(1, 3);
+    this.move(1, 3);
+    this.move(1, 2);
   }
 
-  hookDown(array: Array<Array<TaquinCell>>) {
-    this.move(array, 1, 2);
-    this.move(array, 1, 3);
-    this.move(array, 1, 3);
-    this.move(array, 1, 1);
+  hookDown() {
+    this.move(1, 2);
+    this.move(1, 3);
+    this.move(1, 3);
+    this.move(1, 1);
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //            UTILITIES        //////////////////////////////////////////////////////////////////////////////////////////////
-  // Find coordinates of cell with his value
-  findCoordinates(array: Array<Array<TaquinCell>>, x: number): Array<number> {
-    for (let i = 0; i < array.length; i++) {
-      for (let j = 0; j < array[i].length; j++) {
-        if (array[i][j].value === x) {
-          return [i, j];
-        }
-      }
-    }
-  }
-
-  move(array: Array<Array<TaquinCell>>, diff: number, destination: number) {
-    for (let i = 0; i < diff; i++) {
-      this.emptyCase = this.findCoordinates(array, this.voidCellValue);
-      this.movements.push(destination);
-      const tempCell = array[this.emptyCase[0]][this.emptyCase[1]];
-      switch (destination) {
-        case 1:
-          array[this.emptyCase[0]][this.emptyCase[1]] = array[this.emptyCase[0] - 1][this.emptyCase[1]];
-          array[this.emptyCase[0] - 1][this.emptyCase[1]] = tempCell;
-          break;
-        case 2:
-          array[this.emptyCase[0]][this.emptyCase[1]] = array[this.emptyCase[0] + 1][this.emptyCase[1]];
-          array[this.emptyCase[0] + 1][this.emptyCase[1]] = tempCell;
-          break;
-        case 3:
-          array[this.emptyCase[0]][this.emptyCase[1]] = array[this.emptyCase[0]][this.emptyCase[1] + 1];
-          array[this.emptyCase[0]][this.emptyCase[1] + 1] = tempCell;
-          break;
-        case 4:
-          array[this.emptyCase[0]][this.emptyCase[1]] = array[this.emptyCase[0]][this.emptyCase[1] - 1];
-          array[this.emptyCase[0]][this.emptyCase[1] - 1] = tempCell;
-          break;
-      }
-    }
-  }
-
-  goMove() {
-    const self = this;
-    setTimeout(() => {
-      const firstElement = self.movements[0];
-      if (firstElement) {
-        self.taquinArray.swap(firstElement['coordinates'], firstElement['destination']);
-        self.movements.splice(0, 1);
-      }
-      self.goMove();
-    }, 100);
-  }
+  // goMove() {
+  //   const self = this;
+  //   setTimeout(() => {
+  //     const firstElement = self.movements[0];
+  //     if (firstElement) {
+  //       self.taquinArray.swap(firstElement['coordinates'], firstElement['destination']);
+  //       self.movements.splice(0, 1);
+  //     }
+  //     self.goMove();
+  //   }, 100);
+  // }
 }
 
