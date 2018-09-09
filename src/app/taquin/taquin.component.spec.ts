@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TaquinComponent } from './taquin.component';
+import {TaquinArray} from '../taquinArray';
 
 describe('TaquinComponent', () => {
   let component: TaquinComponent;

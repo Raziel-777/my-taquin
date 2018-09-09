@@ -7,7 +7,7 @@ export class TaquinCell {
     this.display = val + 1;
     this.img = 'mickey' + (val + 1).toString() + '.jpg';
   }
-  changePattern(pattern: string): void {
-    this.img = pattern + this.value + '.jpg';
+  switchPattern(pattern: string): void {
+    this.img = pattern + this.display + '.jpg';
   }
 }
