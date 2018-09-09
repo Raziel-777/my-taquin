@@ -24,7 +24,8 @@ export class TaquinComponent implements OnInit {
   private flag;
   private voidCellValue;
   private initial;
-  public solve = false;
+  public failed = null;
+  public cellsNumber = 3;
 
   constructor(private patternService: PatternService) {
     patternService.changePattern$.subscribe(pattern => {
@@ -40,28 +41,20 @@ export class TaquinComponent implements OnInit {
     this.initial = this.taquinObject.naturalTaquin;
   }
 
-  test() {
-    let gagne = 0;
-    let fait = 0;
-    for (let i = 0; i < 1000; i++) {
-      this.movements = [];
-      this.taquinObject = new TaquinArray(3);
-      this.taquin = this.taquinObject.taquinArray;
-      this.cellsArray = this.taquin.map(x => Object.assign([], x));
-      this.solvencyTaquin();
-      if (this.solvency) {
-        fait++;
-        console.log(gagne, fait);
-        const result = this.resolve();
-        if (result) {
-          gagne++;
-        }
-      }
-    }
+  newTaquin() {
+    this.solvency = null;
+    this.movements = [];
+    this.failed = null;
+    this.taquinObject = new TaquinArray(this.cellsNumber);
+    this.taquin = this.taquinObject.taquinArray;
+    this.cellsArray = this.taquin.map(x => Object.assign([], x));
+    this.voidCellValue = this.taquinObject.voidCellValue;
+    this.initial = this.taquinObject.naturalTaquin;
   }
 
   // Method to swap swapNumber cells
   change(): void {
+    this.failed = null;
     this.solvency = null;
     // array of moves
     const moves = [1, 2, 3, 4]; // 1: UP, 2: DOWN, 3: RIGHT, 4: LEFT
@@ -177,6 +170,9 @@ export class TaquinComponent implements OnInit {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //            MAIN METHOD FOR RESOLVE TAQUIN        /////////////////////////////////////////////////////////////////////////
   resolve() {
+    this.cellsArray = this.taquin.map(x => Object.assign([], x));
+    const width = this.cellsArray[0].length;
+    const deep = this.cellsArray.length;
     for (let i = 0; i < this.cellsArray.length - 2; i++) {
       for (let j = 0; j < this.cellsArray[i].length - 2; j++) {
         const value1 = this.cellsArray[i][j].value;
@@ -229,56 +225,40 @@ export class TaquinComponent implements OnInit {
       }
     }
     // Case vide mise tout à gauche
-    for (let i = 0; i < this.cellsArray[this.cellsArray.length - 2].length - 1; i++) {
+    for (let i = 0; i < width - 1; i++) {
       this.move(1, 4);
     }
-    for (let i = 0; i < this.cellsArray[this.cellsArray.length - 2].length - 2; i++) {
-      const val1 = this.cellsArray[this.cellsArray.length - 2].length * (this.cellsArray.length - 2) + i;
-      const val2 = this.cellsArray[this.cellsArray.length - 2].length * (this.cellsArray.length - 2) +
-        this.cellsArray[this.cellsArray.length - 2].length + i;
-      const val3 = val1 + 1;
-      const val4 = val2 + 1;
-      const val5 = val1 + 2;
-      // Coordinates
-      const coord1 = TaquinArray.findCoordinates(this.cellsArray, val1);
-      const coord2 = TaquinArray.findCoordinates(this.cellsArray, val2);
-      const initCoord1 = TaquinArray.findCoordinates(this.initial, val1);
-      const initCoord2 = TaquinArray.findCoordinates(this.initial, val2);
-      const initCoord3 = TaquinArray.findCoordinates(this.initial, val3);
-      const initCoord4 = TaquinArray.findCoordinates(this.initial, val4);
-      const initCoord5 = TaquinArray.findCoordinates(this.initial, val5); // Escape case
-      if (coord1 === initCoord2 && coord2 === initCoord4) {
+    for (let i = 0; i < width - 2; i++) {
+      // initial value
+      const initVal1 = width * (deep - 2) + i;
+      const initVal2 = width * (deep - 2) + width + i;
+      // Values
+      let val2 = this.cellsArray[deep - 1][i].value;
+      const val3 = this.cellsArray[deep - 2][i + 1].value;
+      let val4 = this.cellsArray[deep - 1][i + 1].value;
+      if (val2 === initVal1 && val4 === initVal2) {
         this.move(1, 2);
         this.move(1, 3);
         this.move(1, 1);
       } else {
-        if (coord2 === initCoord2 || coord2 === initCoord3 || coord2 === initCoord4) {
-          this.voidCellPositioning(val2);
-          this.movement(val2, initCoord5);
+        if (val2 === initVal2 || val3 === initVal2 || val4 === initVal2) {
+          this.voidCellPositioning(initVal2);
+          this.movement(initVal2, [deep - 2, i + 2]);
         }
-        if (this.cellsArray[this.cellsArray.length - 1][i].value !== val1) {
-          this.voidCellPositioning(val1);
-          this.movement(val1, initCoord2);
+        val2 = this.cellsArray[deep - 1][i].value;
+        if (val2 !== initVal1) {
+          this.voidCellPositioning(initVal1);
+          this.movement(initVal1, [deep - 1, i]);
         }
-        if (this.cellsArray[this.cellsArray.length - 1][i + 1].value !== val2) {
-          this.voidCellPositioning(val2);
-          this.movement(val2, initCoord4);
+        val4 = this.cellsArray[deep - 1][i + 1].value;
+        if (val4 !== initVal2) {
+          this.voidCellPositioning(initVal2);
+          this.movement(initVal2, [deep - 1, i + 1]);
         }
-        console.log(this.cellsArray);
         this.hook();
       }
     }
     this.final();
-    let resolve = true;
-    const solve = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-    for (const entries of this.cellsArray) {
-      for (const entry of entries) {
-        if (entry.value !== solve[entry.value]) {
-          resolve = false;
-        }
-      }
-    }
-    return resolve;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -511,9 +491,10 @@ export class TaquinComponent implements OnInit {
 
   // Final cycle
   final() {
+    let i = 0;
     this.move(1, 3);
     this.move(1, 2);
-    while (true) {
+    while (i < 4) {
       const coord1 = [this.cellsArray.length - 2, this.cellsArray[0].length - 2];
       const coord2 = [this.cellsArray.length - 2, this.cellsArray[0].length - 1];
       const coord3 = [this.cellsArray.length - 1, this.cellsArray[0].length - 2];
@@ -524,14 +505,19 @@ export class TaquinComponent implements OnInit {
       const initVal2 = this.initial[coord2[0]][coord2[1]].value;
       const initVal3 = this.initial[coord3[0]][coord3[1]].value;
       if (val1 === initVal1 && val2 === initVal2 && val3 === initVal3) {
-        break;
+        this.failed = false;
+        this.goMove();
+        return;
+
       } else {
         this.move(1, 4);
         this.move(1, 1);
         this.move(1, 3);
         this.move(1, 2);
       }
+      i++;
     }
+    this.failed = true;
   }
 
   // CLIMB OR DOWN ONE CELL
@@ -647,7 +633,7 @@ export class TaquinComponent implements OnInit {
         if (--i) {          // If i > 0, keep going
           theLoop(i);       // Call the loop again, and pass it the current value of i
         }
-      }, 1000);
+      }, 100);
     })(movementsLength);
   }
 }

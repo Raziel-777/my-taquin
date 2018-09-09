@@ -1,14 +1,13 @@
 <div class="row justify-content-center">
   <table class="table table-bordered table-dark col-md-4" style="height: 500px">
-    <tbody>
-    <tr>
-      <td *ngFor="let cell of taquin[0]" class="cell" (click)="switch (cell)">{{ cell.display }}</td>
+    <tbody *ngIf="cellsNumber === 3">
+    <tr *ngFor="let array of taquin">
+      <td style="height: 200px; width: 200px;" *ngFor="let cell of array" class="cell" (click)="switch (cell)"><img src="../../assets/img/{{ cell.img }}" alt=""></td>
     </tr>
-    <tr>
-      <td *ngFor="let cell of taquin[1]" class="cell" (click)="switch (cell)">{{ cell.display }}</td>
-    </tr>
-    <tr>
-      <td *ngFor="let cell of taquin[2]" class="cell" (click)="switch (cell)">{{ cell.display }}</td>
+    </tbody>
+    <tbody *ngIf="cellsNumber > 3">
+    <tr *ngFor="let array of taquin">
+      <td style="height: 90px; width: 90px; font-size:55px;" *ngFor="let cell of array" class="cell" (click)="switch (cell)">{{ cell.display }}</td>
     </tr>
     </tbody>
   </table>
@@ -17,17 +16,22 @@
 <br>
 <br>
 <div class="row justify-content-center">
-  <button style="margin-right: 20px" class="btn btn-primary" (click)="test()" href="">test</button>
   <button style="margin-right: 20px" class="btn btn-primary" (click)="change()" href="">SWAP</button>
-  <button style="margin-right: 20px" class="btn btn-primary" (click)="goMove()" href="">MOVE</button>
   <input style="margin-right: 20px" type="number" min="1" max="1000" [(ngModel)]="swapNumber" placeholder="{{ swapNumber }}">
   <button style="margin-right: 20px" class="btn btn-success" (click)="sort()" href="">Sort</button>
   <p style="margin-right: 20px">Nombre de swap : {{ iterSwap }}</p>
-  <button style="margin-right: 20px" class="btn btn-info" (click)="resolve()" href="">Resolve</button>
+  <button *ngIf="failed === null" style="margin-right: 20px" class="btn btn-info" (click)="resolve()" href="">Resolve</button>
+  <button *ngIf="failed === true" style="margin-right: 20px" class="btn btn-danger" href="">Résolution impossible</button>
+  <button *ngIf="failed === false" style="margin-right: 20px" class="btn btn-success" href="">Let's Go !</button>
 
   <br>
   <button *ngIf="solvency === null" style="margin-right: 20px" class="btn btn-dark" (click)="solvencyTaquin()" href="">Solvable ?</button>
   <button *ngIf="solvency === true" style="margin-right: 20px" class="btn btn-success" href="">OUI !  🤩</button>
   <button *ngIf="solvency === false" style="margin-right: 20px" class="btn btn-danger" href="">NON   🤮</button>
 
+</div>
+<br>
+<div class="row justify-content-center">
+  <button style="margin-right: 20px" class="btn btn-dark" (click)="newTaquin()" href="">Plus de puissance ??</button>
+  <input style="margin-right: 20px" type="number" min="3" max="9" [(ngModel)]="cellsNumber" placeholder="{{ cellsNumber }}">
 </div>
