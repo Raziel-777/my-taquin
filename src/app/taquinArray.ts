@@ -18,6 +18,7 @@ export class TaquinArray {
       }
     }
   }
+
   // Build one array with x *x value (number of cells) and shuffle ie before build the 2 dimensional array for the taquin.
   constructor(x: number) {
     for (let i = 0; i < x * x; i++) {
@@ -34,7 +35,7 @@ export class TaquinArray {
       for (let j = 0; j < x; j++) {
         this.taquinArray[i][j] = new TaquinCell(this.baseArray[value]);
         this.naturalTaquin[i][j] = new TaquinCell(this.naturalArray[value]);
-        value ++;
+        value++;
       }
     }
     this.voidCellValue = x * x - 1;
@@ -93,7 +94,7 @@ export class TaquinArray {
       while (i < array.length) {
         j = i + 1;
         while (j < array.length) {
-          iter ++;
+          iter++;
           if (array[i].value > array[j].value) {
             const tempCell = array[i];
             array[i] = array[j];
@@ -113,7 +114,7 @@ export class TaquinArray {
     let loop = 0;
     let bool = false;
     for (let i = 0; i < this.taquinArray.length - 1; i++) {
-      loop ++;
+      loop++;
       if (this.taquinArray[i][this.taquinArray.length - 1].value > this.taquinArray[i + 1][0].value) {
         const tempCell = this.taquinArray[i][this.taquinArray.length - 1];
         this.taquinArray[i][this.taquinArray.length - 1] = this.taquinArray[i + 1][0];
