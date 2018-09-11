@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {TaquinArray} from '../taquinArray';
 import {TaquinCell} from '../taquinCell';
 import {PatternService} from '../index/pattern.service';
-import {conditionallyCreateMapObjectLiteral} from '@angular/compiler/src/render3/view/util';
 
 @Component({
   selector: 'app-taquin',
@@ -624,6 +623,7 @@ export class TaquinComponent implements OnInit {
   }
 
   goMove() {
+    alert('en' + (this.movements.length - 1).toString() + ' coups');
     const self = this;
     const movementsLength = this.movements.length;
     (function theLoop(i) {

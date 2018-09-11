@@ -1,0 +1,25 @@
+<div class="row justify-content-center">
+  <table class="table table-bordered table-dark col-md-4" style="height: 500px">
+    <tbody>
+    <tr *ngFor="let array of taquin">
+      <td style="height: 200px; width: 200px;" *ngFor="let cell of array" class="cell" (click)="switch (cell)"><img class="img-fluid" src="../../assets/img/{{ cell.img }}" alt=""></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<br>
+<br>
+<div class="row justify-content-center">
+  <button style="margin-right: 20px" class="btn btn-success" (click)="sort()" href="">Sort</button>
+  <button style="margin-right: 20px" class="btn btn-success" (click)="solveTaquin()" href="">SolveTaquin</button>
+  <br>
+  <button *ngIf="solvency === null" style="margin-right: 20px" class="btn btn-dark" (click)="solvencyTaquin()" href="">Solvable ?</button>
+  <button *ngIf="solvency === true" style="margin-right: 20px" class="btn btn-success" href="">OUI !  🤩</button>
+  <button *ngIf="solvency === false" style="margin-right: 20px" class="btn btn-danger" href="">NON   🤮</button>
+
+</div>
+<br>
+<div class="row justify-content-center">
+<button style="margin-right: 20px" class="btn btn-dark" routerLink="">Taquin 1</button>
+
+</div>
