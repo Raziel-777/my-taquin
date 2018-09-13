@@ -1,7 +1,7 @@
 import {TaquinCell} from './taquinCell';
 
 export class TaquinInline {
-  public baseArray = [5, 7, 9, 6, 2, 4, 1, 3, 8];
+  public baseArray = [3, 4, 5, 0, 2, 1, 8, 6, 7];
   public taquinArray: TaquinCell[];
 
   constructor() {

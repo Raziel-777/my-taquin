@@ -623,7 +623,6 @@ export class TaquinComponent implements OnInit {
   }
 
   goMove() {
-    alert('en' + (this.movements.length - 1).toString() + ' coups');
     const self = this;
     const movementsLength = this.movements.length;
     (function theLoop(i) {

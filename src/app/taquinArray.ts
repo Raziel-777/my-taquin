@@ -26,6 +26,7 @@ export class TaquinArray {
       this.baseArray.push(i);
     }
     this.shuffle();
+    // this.baseArray = [0, 8, 1, 3, 4, 2, 6, 7, 5];
     this.taquinArray = [];
     this.naturalTaquin = [];
     let value = 0;

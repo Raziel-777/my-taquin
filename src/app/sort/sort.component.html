@@ -1,0 +1,27 @@
+<div class="row justify-content-center">
+  <table class="table table-bordered table-dark col-md-4" style="height: 10px">
+    <tbody>
+    <tr>
+      <td style="height: 1px; width: 1px; font-size: 15px" *ngFor="let cell of taquin" class="cell">
+        <p>{{ cell.display }}</p></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<br>
+<br>
+<div class="row justify-content-center">
+  <button style="margin-right: 20px" class="btn btn-primary" (click)="sortShell()" href="">Shell</button>
+  <button style="margin-right: 20px" class="btn btn-primary" (click)="sortInsertion()" href="">Insertion</button>
+  <button style="margin-right: 20px" class="btn btn-primary" (click)="sortSelection()" href="">Selection</button>
+  <button style="margin-right: 20px" class="btn btn-primary" (click)="sortBulle()" href="">Bulle</button>
+  <button style="margin-right: 20px" class="btn btn-primary" (click)="sortFusion( taq )" href="">Fusion</button>
+  <button style="margin-right: 20px" class="btn btn-primary" (click)="shuffle()" href="">Shuffle</button>
+</div>
+<br>
+<br>
+
+<div class="row justify-content-center">
+  <button style="margin-right: 20px" class="btn btn-dark" routerLink="/taquin2">Taquin 2</button>
+  <button style="margin-right: 20px" class="btn btn-dark" routerLink="/taquin">Taquin 1</button>
+</div>

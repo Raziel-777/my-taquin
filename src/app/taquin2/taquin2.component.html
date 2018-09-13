@@ -12,6 +12,8 @@
 <div class="row justify-content-center">
   <button style="margin-right: 20px" class="btn btn-success" (click)="sort()" href="">Sort</button>
   <button style="margin-right: 20px" class="btn btn-success" (click)="solveTaquin()" href="">SolveTaquin</button>
+  <button style="margin-right: 20px" class="btn btn-success" (click)="dfs(cellsArray)" href="">DFS</button>
+  <button style="margin-right: 20px" class="btn btn-success" (click)="goMove()" href="">GO</button>
   <br>
   <button *ngIf="solvency === null" style="margin-right: 20px" class="btn btn-dark" (click)="solvencyTaquin()" href="">Solvable ?</button>
   <button *ngIf="solvency === true" style="margin-right: 20px" class="btn btn-success" href="">OUI !  🤩</button>
@@ -21,5 +23,6 @@
 <br>
 <div class="row justify-content-center">
 <button style="margin-right: 20px" class="btn btn-dark" routerLink="">Taquin 1</button>
+<button style="margin-right: 20px" class="btn btn-dark" routerLink="/sort">Sort</button>
 
 </div>
